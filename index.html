@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>早餐抽一張</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.29.4/dist/index.js"></script>
+<style>
+  :root{
+    --bg:#EEF2EA; --surface:#FFFFFF; --surface-2:#F6F8F3;
+    --ink:#25332B; --muted:#6C7B70; --line:#E0E7DA;
+    --sweet:#C86B86; --sweet-soft:#F7E3EA; --sweet-ink:#8E3F58;
+    --savory:#4F9A73; --savory-soft:#DCEDE2; --savory-ink:#2E6B4C;
+    --accent:#4F9A73; --shadow:0 1px 2px rgba(37,51,43,.06);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#121814; --surface:#1B231D; --surface-2:#212a23;
+      --ink:#E9F0E9; --muted:#9DAFA2; --line:#2C382F;
+      --sweet:#E88BA4; --sweet-soft:#39232B; --sweet-ink:#F0AEC0;
+      --savory:#79C09A; --savory-soft:#1E2f26; --savory-ink:#9CD6B5;
+      --accent:#79C09A; --shadow:0 1px 2px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#121814; --surface:#1B231D; --surface-2:#212a23;
+    --ink:#E9F0E9; --muted:#9DAFA2; --line:#2C382F;
+    --sweet:#E88BA4; --sweet-soft:#39232B; --sweet-ink:#F0AEC0;
+    --savory:#79C09A; --savory-soft:#1E2f26; --savory-ink:#9CD6B5;
+    --accent:#79C09A; --shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg); color:var(--ink);
+    font-family:"Nunito","PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
+    line-height:1.6; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1040px; margin:0 auto; padding:22px 16px 60px}
+  header.top{padding:12px 2px 4px}
+  .kicker{font-size:.82rem; color:var(--savory-ink); font-weight:800}
+  h1{font-size:2rem; font-weight:900; margin:.1em 0 .1em}
+  .sub{color:var(--muted); font-weight:600; margin:0}
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow)}
+  section{margin-top:18px}
+  .sec-title{display:flex; align-items:baseline; gap:10px; margin:0 4px 10px; flex-wrap:wrap}
+  .sec-title h2{font-size:1.12rem; font-weight:900; margin:0}
+  .sec-title span{color:var(--muted); font-size:.83rem; font-weight:700}
+  .tabs{display:flex; gap:8px; margin:14px 0 4px}
+  .tabs button{font:inherit; font-weight:900; font-size:.95rem; padding:9px 18px; border-radius:11px; border:1.5px solid var(--line); background:var(--surface-2); color:var(--muted); cursor:pointer}
+  .tabs button.on{background:var(--accent); color:#fff; border-color:transparent}
+  .settings{padding:16px}
+  .fieldrow{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px}
+  .fieldrow3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:14px}
+  @media (max-width:560px){.fieldrow{grid-template-columns:1fr}.fieldrow3{grid-template-columns:1fr}}
+  .prefrow{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px}
+  .prefrow4{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:14px; align-items:start}
+  @media (max-width:820px){.prefrow4{grid-template-columns:1fr 1fr}}
+  @media (max-width:520px){.prefrow4{grid-template-columns:1fr}}
+  .prefrow3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:14px}
+  @media (max-width:560px){.prefrow{grid-template-columns:1fr}.prefrow3{grid-template-columns:1fr}}
+  .sec-title .zh-inline{margin-left:auto; font-size:.85rem}
+  .fullsel{width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:10px; background:var(--surface-2); color:var(--ink); font:inherit; font-weight:700}
+  .fullsel:focus{outline:2px solid var(--accent); outline-offset:1px}
+  .vegdesc{font-size:.76rem; color:var(--muted); font-weight:600; margin:6px 2px 0; line-height:1.5}
+  .field label{display:block; font-size:.76rem; color:var(--muted); font-weight:800; margin-bottom:4px}
+  .field input,.field select,.field textarea{width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:10px; background:var(--surface-2); color:var(--ink); font:inherit; font-weight:700}
+  .field textarea{font-weight:600; min-height:74px; resize:vertical}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--accent); outline-offset:1px}
+  .group{margin-bottom:14px}
+  .group .glabel{font-size:.78rem; color:var(--muted); font-weight:800; margin:0 0 7px}
+  .chips{display:flex; flex-wrap:wrap; gap:8px}
+  .chip-btn{font:inherit; font-size:.85rem; font-weight:800; padding:7px 13px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface-2); color:var(--muted); cursor:pointer}
+  .chip-btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  .chip-btn.on.avoid{background:var(--sweet-soft); border-color:var(--sweet); color:var(--sweet-ink)}
+  .chip-btn.on.have{background:var(--savory-soft); border-color:var(--savory); color:var(--savory-ink)}
+  .chip-btn.custom{background:var(--sweet-soft); border-color:var(--sweet); color:var(--sweet-ink)}
+  .custom-input{display:flex; gap:8px}
+  .custom-input input{flex:1; padding:9px 11px; border:1px solid var(--line); border-radius:10px; background:var(--surface-2); color:var(--ink); font:inherit; font-weight:700}
+  .controls{display:flex; flex-wrap:wrap; gap:9px; align-items:center; margin-top:4px}
+  .btn{font:inherit; font-weight:900; font-size:.9rem; padding:10px 16px; border-radius:11px; cursor:pointer; border:1.5px solid transparent}
+  .btn.primary{background:var(--accent); color:#fff}
+  .btn.ghost{background:var(--surface-2); color:var(--ink); border-color:var(--line)}
+  .btn.danger{background:transparent; color:var(--sweet-ink); border-color:var(--sweet)}
+  .seg{display:inline-flex; border:1.5px solid var(--line); border-radius:11px; overflow:hidden}
+  .seg button{font:inherit; font-weight:900; font-size:.86rem; padding:9px 14px; border:0; background:var(--surface-2); color:var(--muted); cursor:pointer}
+  .seg button.on{background:var(--accent); color:#fff}
+  .spacer{flex:1}
+  .legend{display:flex; gap:16px; flex-wrap:wrap; align-items:center; margin:2px 4px 0; color:var(--muted); font-weight:700; font-size:.85rem}
+  .dot{display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:6px; vertical-align:-1px}
+  .dot.s{background:var(--sweet)} .dot.v{background:var(--savory)}
+  .week-title{font-weight:900; font-size:1rem; margin:18px 6px 10px}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(215px,1fr)); gap:12px}
+  #menu.zh-on .grid{grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
+  .day{background:var(--surface); border:1px solid var(--line); border-left-width:5px; border-radius:14px; padding:12px 13px; box-shadow:var(--shadow); display:flex; flex-direction:column}
+  .day.t-sweet{border-left-color:var(--sweet)}
+  .day.t-savory{border-left-color:var(--savory)}
+  .day-top{display:flex; align-items:center; justify-content:space-between; gap:6px; margin-bottom:5px}
+  .num{font-size:1.4rem; font-weight:900; line-height:1}
+  .t-sweet .num{color:var(--sweet)} .t-savory .num{color:var(--savory)}
+  .type{font-size:.7rem; font-weight:800; padding:3px 8px; border-radius:999px}
+  .t-sweet .type{background:var(--sweet-soft); color:var(--sweet-ink)}
+  .t-savory .type{background:var(--savory-soft); color:var(--savory-ink)}
+  .dish{font-size:.96rem; font-weight:800; margin:0 0 2px}
+  .extra{font-size:.78rem; color:var(--muted); font-weight:600; margin:0 0 8px}
+  .cchips{display:flex; flex-wrap:wrap; gap:5px}
+  .cchip{font-size:.7rem; font-weight:700; padding:3px 7px; border-radius:8px; background:var(--surface-2); border:1px solid var(--line)}
+  .cchip.o3{color:var(--savory-ink); border-color:transparent; background:var(--savory-soft)}
+  .cchip.slow{color:var(--sweet-ink); border-color:transparent; background:var(--sweet-soft)}
+  .nutri{font-size:.7rem; color:var(--muted); font-weight:700; margin-top:6px; line-height:1.5}
+  .foot{display:flex; align-items:center; justify-content:space-between; gap:6px; margin-top:8px; padding-top:7px; border-top:1px dashed var(--line); font-size:.74rem; font-weight:700}
+  .prep{color:var(--muted)} .drink{color:var(--ink)}
+  .cardactions{display:flex; flex-wrap:wrap; gap:6px; margin-top:9px}
+  .mini{font:inherit; font-weight:800; font-size:.75rem; padding:6px 8px; border-radius:9px; border:1.5px solid var(--line); background:var(--surface-2); color:var(--ink); cursor:pointer; flex:1; min-width:56px}
+  .picker{width:100%; margin-top:7px; padding:7px 8px; border:1.5px solid var(--line); border-radius:9px; background:var(--surface-2); color:var(--ink); font:inherit; font-weight:700; font-size:.78rem; display:none}
+  .picker.show{display:block}
+  #drawArea{display:none; text-align:center; padding:6px 0 0}
+  #drawArea.show{display:block}
+  .draw-hint{color:var(--muted); font-weight:800; margin:6px 0 14px}
+  .drawmeals{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:14px}
+  .dmeal{font:inherit; font-weight:900; font-size:.92rem; padding:8px 18px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface-2); color:var(--muted); cursor:pointer}
+  .dmeal.on{background:var(--accent); color:#fff; border-color:transparent}
+  #drawCard{max-width:360px; margin:0 auto 16px; perspective:1000px}
+  @keyframes spinReveal{0%{transform:rotateY(0deg) scale(1)}55%{transform:rotateY(720deg) scale(.92)}100%{transform:rotateY(1080deg) scale(1)}}
+  .spinning{animation:spinReveal .7s cubic-bezier(.2,.7,.3,1)}
+  .cardback{display:flex; align-items:center; justify-content:center; min-height:168px; background:var(--savory-soft); border-left-color:var(--savory)!important}
+  .backmark{font-size:3rem; font-weight:900; color:var(--savory)}
+  @media (prefers-reduced-motion:reduce){.spinning{animation:none}}
+  .day.big{border-left-width:7px; padding:20px 20px; text-align:left}
+  .day.big .dish{font-size:1.35rem; margin-bottom:4px}
+  .day.big .extra{font-size:.9rem; margin-bottom:12px}
+  .drawbtns{display:flex; gap:9px; justify-content:center; flex-wrap:wrap}
+  .bigbtn{font-size:1.1rem; padding:14px 26px}
+  .reveal{animation:pop .28s ease}
+  @keyframes pop{from{transform:scale(.94); opacity:.3} to{transform:scale(1); opacity:1}}
+  @media (prefers-reduced-motion:reduce){.reveal{animation:none}}
+  .placeholder{color:var(--muted); font-weight:800; padding:34px 16px; border:2px dashed var(--line); border-radius:16px}
+  /* zhuyin */
+  .zdish{display:flex; flex-wrap:wrap; align-items:center; gap:5px 6px}
+  .zu{display:inline-flex; align-items:center; gap:1px; margin-right:2px}
+  .zhz{font-size:1.15rem; font-weight:800; line-height:1.1; color:var(--ink)}
+  .zbp{position:relative; display:inline-block; padding-right:6px}
+  .zsym{writing-mode:vertical-rl; text-orientation:upright; font-size:.54rem; line-height:1; color:var(--ink); display:block; font-weight:500}
+  .ztn{position:absolute; right:0; bottom:0; font-size:.6rem; line-height:1; color:var(--ink); font-weight:700}
+  .ztn.neutral{right:auto; left:1px; top:-6px; bottom:auto}
+  .zsep{align-self:center; font-size:1.15rem; font-weight:800; color:var(--muted); margin:0 1px}
+  .day.big .zdish{gap:9px 10px}
+  .day.big .zhz{font-size:1.75rem; line-height:1.12}
+  .day.big .zbp{padding-right:10px}
+  .day.big .zsym{font-size:.92rem}
+  .day.big .ztn{font-size:1rem}
+  .day.big .zsep{font-size:1.55rem}
+  /* switch */
+  .switch{display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:700; font-size:.88rem; color:var(--ink)}
+  .switch input{position:absolute; opacity:0; width:0; height:0}
+  .track{width:44px; height:26px; border-radius:999px; background:var(--line); position:relative; flex:none; transition:background .2s}
+  .track::after{content:""; position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; transition:left .2s}
+  .switch input:checked+.track{background:var(--accent)}
+  .switch input:checked+.track::after{left:21px}
+  .switch input:focus-visible+.track{outline:2px solid var(--accent); outline-offset:2px}
+  .empty{padding:18px; text-align:center; color:var(--muted); font-weight:700}
+  .note{padding:15px 16px; background:var(--surface-2)}
+  .note p{margin:.4em 0; font-weight:600}
+  .shoplink{display:block; text-decoration:none; color:inherit; padding:14px 16px; margin-bottom:10px; border:1px solid var(--line); border-radius:14px; background:var(--surface)}
+  .shoplink:hover{border-color:var(--accent)}
+  .shoplink b{display:block; font-weight:900; margin-bottom:2px}
+  .shoplink span{color:var(--muted); font-weight:600; font-size:.85rem}
+  .shoplink .go{color:var(--savory-ink); font-weight:800; font-size:.82rem; margin-top:6px; display:inline-block}
+  /* manage */
+  .disc{color:var(--muted); font-weight:700; font-size:.82rem; margin:0 4px 12px}
+  .mgsearch{width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:11px; background:var(--surface-2); color:var(--ink); font:inherit; font-weight:700; margin-bottom:10px}
+  .mgsearch:focus{outline:2px solid var(--accent); outline-offset:1px}
+  .mealtiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(78px,1fr)); gap:8px; margin-bottom:10px}
+  .mtile{padding:10px 6px; border:1.5px solid var(--line); border-radius:12px; background:var(--surface-2); color:var(--muted); cursor:pointer; text-align:center; font:inherit}
+  .mtile b{display:block; font-size:.95rem; font-weight:900; color:inherit}
+  .mtile small{font-size:.7rem; font-weight:700; color:var(--muted)}
+  .mtile.on{background:var(--savory-soft); border-color:var(--savory); color:var(--savory-ink)}
+  .mtile.on small{color:var(--savory-ink)}
+  .filterrow{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px}
+  .filterrow select{padding:8px 10px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface-2); color:var(--ink); font:inherit; font-weight:800; font-size:.82rem}
+  .dd>summary{list-style:none; cursor:pointer; padding:8px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface-2); color:var(--ink); font-weight:800; font-size:.82rem; display:inline-block}
+  .dd>summary::-webkit-details-marker{display:none}
+  .dd[open]>summary{border-color:var(--accent)}
+  .ddpanel{margin-top:6px; padding:8px 12px; border:1px solid var(--line); border-radius:10px; background:var(--surface); box-shadow:var(--shadow)}
+  .ddpanel label{display:flex; align-items:center; gap:7px; font-weight:700; font-size:.85rem; padding:5px 0; cursor:pointer}
+  .rlist{display:flex; flex-direction:column; border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--surface)}
+  .rrow{display:flex; align-items:center; gap:10px; padding:12px 14px; cursor:pointer; border-top:0.5px solid var(--line)}
+  .rrow:first-child{border-top:0}
+  .rrow:hover{background:var(--surface-2)}
+  .rdot{width:9px; height:9px; border-radius:50%; flex:none}
+  .rdot.sweet{background:var(--sweet)} .rdot.savory{background:var(--savory)}
+  .rmain{flex:1; min-width:0}
+  .rname{font-weight:800; font-size:.94rem}
+  .rstats{display:flex; flex-wrap:wrap; gap:5px; margin-top:4px}
+  .rstat{font-size:.7rem; font-weight:700; color:var(--muted); background:var(--surface-2); border:1px solid var(--line); border-radius:7px; padding:2px 7px}
+  .rchev{color:var(--muted); font-weight:900; font-size:1.1rem}
+  .mempty{padding:22px; text-align:center; color:var(--muted); font-weight:700}
+  .mactions{display:flex; gap:8px}
+  .rowbtn{font:inherit; font-weight:800; font-size:.82rem; padding:8px 16px; border-radius:9px; border:1.5px solid var(--line); background:var(--surface-2); color:var(--ink); cursor:pointer}
+  .rowbtn.del{color:var(--sweet-ink); border-color:var(--sweet)}
+  /* modal */
+  .overlay{position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:flex-start; justify-content:center; padding:18px; overflow:auto; z-index:50}
+  .overlay.show{display:flex}
+  .sheet{max-width:520px; width:100%; padding:22px; position:relative; margin:auto}
+  .close{position:absolute; top:12px; right:12px; border:0; background:var(--surface-2); color:var(--ink); width:34px; height:34px; border-radius:50%; font-weight:900; cursor:pointer; font-size:1rem}
+  .mtitle{font-size:1.3rem; font-weight:900; margin:0 34px 4px 0}
+  .mmeta{color:var(--muted); font-weight:700; font-size:.84rem; margin-bottom:6px}
+  .msec{font-weight:900; margin:16px 0 6px}
+  .ol{padding-left:1.25em; margin:0}
+  .ol li{margin:6px 0; font-weight:600}
+  .ing-line{font-weight:600}
+  .shopcat{font-weight:900; margin:14px 0 4px; color:var(--savory-ink)}
+  .shopitem{font-weight:600; margin:3px 0}
+  .formgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  @media (max-width:560px){.formgrid{grid-template-columns:1fr}}
+  .full{grid-column:1/-1}
+  footer{margin-top:26px; text-align:center; color:var(--muted); font-size:.8rem; font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="kicker">給辛苦的爸爸媽媽</div>
+    <h1>早餐抽一張</h1>
+    <div class="tabs">
+      <button data-page="plan" class="on">規劃</button>
+      <button data-page="manage">菜色管理</button>
+    </div>
+  </header>
+
+  <!-- PLAN PAGE -->
+  <div id="planPage">
+    <section>
+      <div class="sec-title"><h2>設定</h2><span>會自動記在這台裝置</span></div>
+      <div class="card settings">
+        <div class="fieldrow3">
+          <div class="field"><label>孩子暱稱</label><input id="pname" placeholder="例如：小宇" maxlength="20"></div>
+          <div class="field"><label>年齡</label><input id="age" placeholder="例如：8 歲" maxlength="12"></div>
+          <div class="field"><label>健康備註（選填）</label><input id="health" placeholder="例如：對蛋過敏" maxlength="60"></div>
+        </div>
+        <div class="group">
+          <p class="glabel">避開食材（點選＝避開）</p>
+          <div class="chips" id="avoidChips"></div>
+        </div>
+        <div class="group">
+          <p class="glabel">其他要避開的食材</p>
+          <div class="custom-input">
+            <input id="customIn" placeholder="輸入食材後按 Enter" maxlength="20">
+            <button class="btn ghost" id="customAdd" type="button">加入</button>
+          </div>
+          <div class="chips" id="customChips" style="margin-top:8px"></div>
+        </div>
+        <div class="group">
+          <p class="glabel">素食者</p>
+          <select id="vegType" class="fullsel">
+            <option value="無">不限（葷食）</option>
+            <option value="全素">全素／純素</option>
+            <option value="蛋素">蛋素</option>
+            <option value="奶素">奶素</option>
+            <option value="奶蛋素">奶蛋素</option>
+            <option value="植物五辛素">植物五辛素</option>
+            <option value="鍋邊素">鍋邊素</option>
+            <option value="海鮮素">海鮮素</option>
+            <option value="Vegan">Vegan（純素生活）</option>
+          </select>
+          <p id="vegDesc" class="vegdesc"></p>
+        </div>
+        <div class="group">
+          <p class="glabel">家中有的設備（沒選到的，需要它的餐點會自動排除）</p>
+          <div class="chips" id="equipChips"></div>
+        </div>
+        <div class="group">
+          <p class="glabel">出餐時間</p>
+          <label class="switch"><input type="checkbox" id="quickToggle"><span class="track"></span><span>只顯示 5 分鐘快速出餐</span></label>
+        </div>
+        <div class="controls">
+          <div class="seg" id="viewSeg">
+            <button data-view="week" class="on">一週</button>
+            <button data-view="month">一個月</button>
+            <button data-view="draw">抽一張</button>
+          </div>
+          <button class="btn primary" id="genBtn">重新產生</button>
+          <button class="btn ghost" id="shopBtn">採買清單</button>
+          <div class="spacer"></div>
+          <button class="btn ghost" id="resetBtn">重設設定</button>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="sec-title"><h2 id="menuHead">早餐菜單</h2><span id="menuMeta"></span><label class="switch zh-inline"><input type="checkbox" id="zhToggle"><span class="track"></span><span>注音</span></label></div>
+      <div class="legend" id="legend">
+        <span><span class="dot s"></span>甜口</span>
+        <span><span class="dot v"></span>鹹口</span>
+        <span>前晚／週末先備；早上現做</span>
+      </div>
+      <div id="menu"></div>
+      <div id="drawArea">
+        <div class="drawmeals" id="drawMeals"></div>
+        <p class="draw-hint" id="drawHint">讓小朋友按一下，看看今天吃什麼。</p>
+        <div id="drawCard"></div>
+        <div class="drawbtns">
+          <button class="btn primary bigbtn" id="drawBtn">抽一張早餐</button>
+          <button class="btn ghost" id="drawRecipeBtn" style="display:none">看食譜</button>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="card note">
+        <p><b>營養小提醒：</b>以米類主食為主、又少蛋少乳時最容易缺蛋白質。菜色每道都放了一個蛋白質來源；偏澱粉的那天加一份毛豆或豆花補上。Omega-3 靠亞麻仁粉、魚、核桃輪流補。</p>
+        <p><b>咖啡因：</b>12 歲以下建議避免咖啡因，12–18 歲每日建議上限約 100 毫克。含可可的餐點已標示，預設會為年幼孩子排除（可在設定切換；也可用無咖啡因的角豆粉代替）。</p>
+        <p style="font-size:.85rem;color:var(--muted)">卡片與表格的營養值為粗略估算，僅供參考，實際依份量與品牌而異。如孩子有特殊健康狀況或飲食限制，請諮詢醫師或營養師。</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="sec-title"><h2>純天然採買點</h2><span>分享參考，非廣告；其他通路也買得到</span></div>
+      <a class="shoplink" href="https://myship.7-11.com.tw/general/detail/GM2211141688505" target="_blank" rel="noopener">
+        <b>純素天堂・米麵包</b>
+        <span>自種有機米做的米吐司、亞麻茴香糙米貝果、瑪格麗特米披薩等——無蛋奶、無麩質。</span>
+        <span class="go">前往賣場</span>
+      </a>
+      <a class="shoplink" href="https://myship.7-11.com.tw/general/detail/GM2401200076583" target="_blank" rel="noopener">
+        <b>純素天堂・米農家（有機米與米餃子）</b>
+        <span>慈心有機驗證香米與純米餃子（無蛋奶、無麩質、無大豆、零添加）；純米高麗菜水餃來自這裡。</span>
+        <span class="go">前往賣場</span>
+      </a>
+      <a class="shoplink" href="https://myship.7-11.com.tw/general/detail/GM2206297118791" target="_blank" rel="noopener">
+        <b>私房好事（天然食材雜貨）</b>
+        <span>無麩質燕麥、豌豆義大利麵、鷹嘴豆、米粉、亞麻／野生藍莓粉、無添加番茄醬、椰棗等。</span>
+        <span class="go">前往賣場</span>
+      </a>
+    </section>
+  </div>
+
+  <!-- MANAGE PAGE -->
+  <div id="managePage" style="display:none">
+    <section>
+      <div class="sec-title"><h2>菜色管理</h2><span id="mgMeta"></span></div>
+      <p class="disc">營養值為粗略估算，僅供參考。可自由新增、修改、刪除；變更會存在這台裝置，並套用到規劃與抽卡。</p>
+      <input id="mgSearch" class="mgsearch" placeholder="搜尋菜名或食材">
+      <div class="mealtiles" id="mealTiles"></div>
+      <div class="filterrow">
+        <details class="dd"><summary>口味</summary><div class="ddpanel" id="ddTaste"></div></details>
+        <details class="dd"><summary>排除過敏原</summary><div class="ddpanel" id="ddAllergy"></div></details>
+        <details class="dd"><summary>家中設備</summary><div class="ddpanel" id="ddEquip"></div></details>
+        <details class="dd"><summary>顯示欄位</summary><div class="ddpanel" id="ddFields"></div></details>
+      </div>
+      <div class="controls" style="margin-bottom:12px">
+        <button class="btn primary" id="addRecipeBtn">新增菜色</button>
+        <button class="btn ghost" id="restoreBtn">恢復預設菜色</button>
+      </div>
+      <div class="rlist" id="recipeList"></div>
+    </section>
+  </div>
+
+  <footer>隨機、篩選、清單、菜色都在你的裝置本機運算，不需連網、不耗用任何額度。資料只存在這台裝置。</footer>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="sheet card">
+    <button class="close" id="closeModal" aria-label="關閉">×</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const ALLERGENS=["蛋","奶","大豆","堅果","魚","麩質"];
+const EQUIP=["電鍋","微波爐","果汁機","烤箱","爐火"];
+
+const DEFAULT_RECIPES=[
+  {id:"oat_blue",type:"隔夜燕麥",taste:"sweet",dish:"藍莓核桃隔夜燕麥",extra:"＋亞麻仁粉・香蕉（用無麩質燕麥）",a:["堅果"],equip:[],protein:"核桃＋堅果醬",o3:true,caffeine:false,prep:"前晚",drink:"椰子水",ing:["燕麥","藍莓","核桃","亞麻仁","香蕉","堅果醬"],steps:["前一晚把燕麥片與椰子水（約 1:1）裝罐","加入亞麻仁粉、藍莓，冷藏一夜","早上放上香蕉、淋一點堅果醬"],nutri:{kcal:"約400",carb:"高",starch:"燕麥",fat:"中高",prot:"中",meat:"無",grain:"燕麥",vit:"C、B群、E",min:"鎂、鐵、鋅"}},
+  {id:"oat_apple",type:"隔夜燕麥",taste:"sweet",dish:"蘋果肉桂核桃隔夜燕麥",extra:"＋亞麻仁粉",a:["堅果"],equip:[],protein:"核桃",o3:true,caffeine:false,prep:"前晚",drink:"豆漿",ing:["燕麥","蘋果","肉桂","核桃","亞麻仁"],steps:["燕麥片＋液體（約 1:1）裝罐","加蘋果丁、肉桂、亞麻仁粉，冷藏一夜","早上撒上核桃"],nutri:{kcal:"約380",carb:"高",starch:"燕麥",fat:"中",prot:"中",meat:"無",grain:"燕麥",vit:"C、B群",min:"鎂、鐵"}},
+  {id:"oat_cocoa",type:"隔夜燕麥",taste:"sweet",dish:"香蕉可可隔夜燕麥",extra:"＋核桃・亞麻仁粉；可用角豆粉代替可可",a:["堅果"],equip:[],protein:"核桃",o3:true,caffeine:true,prep:"前晚",drink:"椰子水",ing:["燕麥","可可","香蕉","核桃","亞麻仁"],steps:["燕麥片＋椰子水＋少許無糖可可粉拌勻（想無咖啡因改用角豆粉）","加香蕉泥、亞麻仁粉，冷藏一夜","早上放核桃"],nutri:{kcal:"約390",carb:"高",starch:"燕麥",fat:"中",prot:"中",meat:"無",grain:"燕麥",vit:"B群",min:"鎂、鐵"}},
+  {id:"oat_yog",type:"隔夜燕麥",taste:"sweet",dish:"莓果希臘優格隔夜燕麥",extra:"＋亞麻仁粉・南瓜籽",a:["奶"],equip:[],protein:"希臘優格＋南瓜籽",o3:true,caffeine:false,prep:"前晚",drink:"椰子水",ing:["燕麥","莓果","優格","亞麻仁","南瓜籽"],steps:["燕麥片＋希臘優格＋一點水拌勻","加莓果、亞麻仁粉，冷藏一夜","早上撒南瓜籽"],nutri:{kcal:"約360",carb:"中高",starch:"燕麥",fat:"中",prot:"高",meat:"無",grain:"燕麥",vit:"C、B2、B12",min:"鈣、鎂、鋅"}},
+  {id:"yog_cup",type:"優格杯",taste:"sweet",dish:"希臘優格水果杯",extra:"奇異果＋香蕉＋南瓜籽＋少許燕麥",a:["奶"],equip:[],protein:"希臘優格＋南瓜籽",o3:false,caffeine:false,prep:"早上",drink:"椰子水",ing:["優格","奇異果","香蕉","南瓜籽","燕麥"],steps:["杯中放希臘優格","加奇異果、香蕉、南瓜籽","撒少許燕麥片"],nutri:{kcal:"約250",carb:"中",starch:"少量燕麥",fat:"中",prot:"高",meat:"無",grain:"少量燕麥",vit:"C、B12",min:"鈣、鋅"}},
+  {id:"smo_yog",type:"奶昔",taste:"sweet",dish:"蔬果奶昔（優格版）",extra:"香蕉＋莓果＋菠菜＋南瓜籽＋希臘優格，配米吐司",a:["奶"],equip:["果汁機"],protein:"希臘優格＋南瓜籽",o3:false,caffeine:false,prep:"早上",drink:"奶昔本身",ing:["香蕉","莓果","菠菜","南瓜籽","優格","米吐司"],steps:["果汁機放香蕉、莓果、菠菜、希臘優格、南瓜籽","加椰子水打勻","倒出，配一片米吐司"],nutri:{kcal:"約350",carb:"中高",starch:"米吐司",fat:"中",prot:"高",meat:"無",grain:"米",vit:"C、A、B12",min:"鈣、鐵"}},
+  {id:"smo_nut",type:"奶昔",taste:"sweet",dish:"蔬果奶昔（核桃版）",extra:"香蕉＋芒果＋菠菜＋核桃，配米吐司",a:["堅果"],equip:["果汁機"],protein:"核桃",o3:true,caffeine:false,prep:"早上",drink:"奶昔本身",ing:["香蕉","芒果","菠菜","核桃","米吐司"],steps:["果汁機放香蕉、芒果、菠菜、核桃","加椰子水打勻","配一片米吐司"],nutri:{kcal:"約350",carb:"中高",starch:"米吐司",fat:"中高",prot:"中",meat:"無",grain:"米",vit:"C、A、E",min:"鎂、鉀"}},
+  {id:"toast_nut",type:"米吐司",taste:"sweet",dish:"米吐司抹堅果醬＋香蕉",extra:"純素天堂米吐司",a:["堅果"],equip:[],protein:"堅果醬",o3:false,caffeine:false,prep:"早上",drink:"豆漿",ing:["米吐司","堅果醬","香蕉"],steps:["米吐司抹上堅果醬","放上香蕉片","可略微回烤更香"],nutri:{kcal:"約350",carb:"高",starch:"米",fat:"中高",prot:"中",meat:"無",grain:"米",vit:"B群、E",min:"鎂、鋅"}},
+  {id:"toast_avo",type:"米吐司",taste:"savory",dish:"米吐司抹酪梨",extra:"＋南瓜籽・水果",a:[],equip:[],protein:"酪梨＋南瓜籽",o3:false,caffeine:false,prep:"早上",drink:"椰子水",ing:["米吐司","酪梨","南瓜籽","水果"],steps:["酪梨壓泥抹在米吐司上","撒南瓜籽、少許鹽","配一份水果"],nutri:{kcal:"約300",carb:"中",starch:"米",fat:"中高",prot:"低中",meat:"無",grain:"米",vit:"E、C、K",min:"鉀、鎂"}},
+  {id:"toast_hum",type:"米吐司",taste:"savory",dish:"米吐司抹鷹嘴豆泥",extra:"＋小黃瓜・水果",a:[],equip:[],protein:"鷹嘴豆泥",o3:false,caffeine:false,prep:"早上",drink:"椰子水",ing:["米吐司","鷹嘴豆","小黃瓜"],steps:["米吐司抹鷹嘴豆泥","放小黃瓜片","配一份水果"],nutri:{kcal:"約290",carb:"中",starch:"米",fat:"中",prot:"中",meat:"無",grain:"米",vit:"B群、葉酸",min:"鐵、鎂"}},
+  {id:"bagel_avo",type:"米貝果",taste:"savory",dish:"亞麻茴香糙米貝果抹酪梨",extra:"＋南瓜籽・香蕉",a:[],equip:[],protein:"酪梨＋南瓜籽",o3:true,caffeine:false,prep:"早上",drink:"豆漿",ing:["米貝果","亞麻","酪梨","南瓜籽","香蕉"],steps:["糙米貝果剖半、稍微回烤","抹酪梨泥、撒南瓜籽","配香蕉"],nutri:{kcal:"約380",carb:"高",starch:"米",fat:"中高",prot:"中",meat:"無",grain:"米",vit:"E、C",min:"鎂、鉀"}},
+  {id:"bagel_hum",type:"米貝果",taste:"savory",dish:"糙米貝果抹鷹嘴豆泥",extra:"＋小黃瓜・蘋果",a:[],equip:[],protein:"鷹嘴豆泥",o3:false,caffeine:false,prep:"早上",drink:"椰子水",ing:["米貝果","鷹嘴豆","小黃瓜","蘋果"],steps:["糙米貝果剖半、稍微回烤","抹鷹嘴豆泥、放小黃瓜","配蘋果"],nutri:{kcal:"約340",carb:"高",starch:"米",fat:"中",prot:"中",meat:"無",grain:"米",vit:"B群、葉酸",min:"鐵、鎂"}},
+  {id:"pizza",type:"米披薩",taste:"savory",dish:"瑪格麗特米披薩＋毛豆",extra:"＋水果",a:["大豆"],equip:["烤箱","電鍋","微波爐"],protein:"毛豆",o3:false,caffeine:false,prep:"早上",drink:"椰子水",ing:["米披薩","番茄","毛豆","水果"],steps:["瑪格麗特米披薩用烤箱或電鍋回烤","毛豆退冰、微波或燙熟","配一份水果"],nutri:{kcal:"約400",carb:"高",starch:"米",fat:"中",prot:"中高",meat:"無",grain:"米",vit:"C、A、K",min:"鐵、鎂"}},
+  {id:"tofu_rice",type:"豆腐",taste:"savory",dish:"溫豆腐＋糙米飯",extra:"＋小黃瓜・奇異果",a:["大豆","魚"],equip:["電鍋"],protein:"豆腐",o3:false,caffeine:false,prep:"前晚預約飯",drink:"椰子水",ing:["豆腐","糙米飯","醬油","柴魚","小黃瓜","奇異果"],steps:["前晚電鍋預約煮糙米飯","早上嫩豆腐微波或蒸 1 分鐘","淋醬油、撒柴魚，配小黃瓜與奇異果"],nutri:{kcal:"約380",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"無（柴魚少量）",grain:"糙米",vit:"B群",min:"鈣、鐵、鎂"}},
+  {id:"tofu_stir",type:"豆腐",taste:"savory",dish:"豆腐蔬菜炒",extra:"配米吐司・水果",a:["大豆"],equip:["爐火"],protein:"豆腐",o3:false,caffeine:false,prep:"早上",drink:"椰子水",ing:["豆腐","菠菜","米吐司"],steps:["板豆腐捏碎","與菠菜一起下鍋炒熟、調味","配米吐司與水果"],nutri:{kcal:"約330",carb:"中",starch:"米",fat:"中",prot:"高",meat:"無",grain:"米",vit:"A、C、K",min:"鈣、鐵"}},
+  {id:"douhua",type:"豆花",taste:"sweet",dish:"無糖豆花＋綜合水果",extra:"＋少許燕麥・南瓜籽",a:["大豆"],equip:[],protein:"豆花＋南瓜籽",o3:false,caffeine:false,prep:"早上",drink:"椰子水",ing:["豆花","水果","燕麥","南瓜籽"],steps:["碗中放無糖豆花","加綜合水果","撒少許燕麥片與南瓜籽"],nutri:{kcal:"約250",carb:"中",starch:"少量燕麥",fat:"低中",prot:"中",meat:"無",grain:"少量燕麥",vit:"C",min:"鈣、鎂"}},
+  {id:"sp_douhua",type:"地瓜",taste:"sweet",dish:"地瓜＋無糖豆花",extra:"＋南瓜籽・芭樂",a:["大豆"],equip:["電鍋","微波爐"],protein:"豆花＋南瓜籽",o3:false,caffeine:false,prep:"週末蒸地瓜",drink:"椰子水",ing:["地瓜","豆花","南瓜籽","芭樂"],steps:["週末先蒸好地瓜冷藏","早上地瓜微波或電鍋加熱","配無糖豆花、撒南瓜籽，附芭樂"],nutri:{kcal:"約330",carb:"高",starch:"地瓜",fat:"低中",prot:"中",meat:"無",grain:"無（地瓜）",vit:"A、C",min:"鉀、鈣"}},
+  {id:"sp_tofu",type:"地瓜",taste:"savory",dish:"地瓜＋溫豆腐",extra:"＋南瓜籽・芭樂",a:["大豆"],equip:["電鍋","微波爐"],protein:"豆腐",o3:false,caffeine:false,prep:"週末蒸地瓜",drink:"椰子水",ing:["地瓜","豆腐","南瓜籽","芭樂"],steps:["地瓜加熱","嫩豆腐微波或蒸熱、淋醬油","撒南瓜籽，附芭樂"],nutri:{kcal:"約320",carb:"高",starch:"地瓜",fat:"中",prot:"中高",meat:"無",grain:"無（地瓜）",vit:"A、C",min:"鈣、鉀"}},
+  {id:"congee_salmon",type:"魚粥",taste:"savory",dish:"鮭魚蔬菜粥",extra:"＋海苔",a:["魚"],equip:["電鍋","爐火"],protein:"鮭魚",o3:true,caffeine:false,prep:"前晚備粥底",drink:"椰子水",ing:["鮭魚","粥","米","海苔","蔬菜"],steps:["前晚煮好白粥或糙米粥底冷藏","早上加鮭魚與切碎蔬菜滾 5 分鐘","起鍋前放海苔"],nutri:{kcal:"約350",carb:"高",starch:"米",fat:"中",prot:"高",meat:"魚",grain:"米",vit:"D、B12、A",min:"鈣、碘、硒"}},
+  {id:"congee_fish",type:"魚粥",taste:"savory",dish:"吻仔魚蔬菜粥",extra:"＋海苔",a:["魚"],equip:["電鍋","爐火"],protein:"吻仔魚",o3:true,caffeine:false,prep:"前晚備粥底",drink:"椰子水",ing:["吻仔魚","粥","米","海苔","蔬菜"],steps:["前晚備好粥底","早上加吻仔魚與蔬菜滾 5 分鐘","撒海苔"],nutri:{kcal:"約330",carb:"高",starch:"米",fat:"低中",prot:"高",meat:"魚",grain:"米",vit:"D、B12",min:"鈣、碘"}},
+  {id:"dump_beans",type:"水餃",taste:"savory",dish:"純米高麗菜水餃＋毛豆",extra:"＋燙青菜・水果",a:["大豆"],equip:["爐火","電鍋"],protein:"毛豆",o3:false,caffeine:false,prep:"早上",drink:"椰子水",ing:["米水餃","高麗菜","毛豆","青菜"],steps:["純米水餃冷凍直接下滾水，中小火保持微滾煮熟","毛豆燙熟","配燙青菜與水果"],nutri:{kcal:"約380",carb:"高",starch:"米",fat:"低中",prot:"中高",meat:"無",grain:"米",vit:"C、K",min:"鐵、鎂"}},
+  {id:"dump_fish",type:"水餃",taste:"savory",dish:"純米高麗菜水餃＋鮭魚鬆",extra:"＋燙青菜・水果",a:["魚"],equip:["爐火","電鍋"],protein:"鮭魚鬆",o3:true,caffeine:false,prep:"早上",drink:"椰子水",ing:["米水餃","高麗菜","鮭魚鬆","青菜"],steps:["純米水餃冷凍下鍋煮熟","撒鮭魚鬆","配燙青菜與水果"],nutri:{kcal:"約380",carb:"高",starch:"米",fat:"中",prot:"中高",meat:"魚",grain:"米",vit:"D、C",min:"鈣、碘"}},
+  {id:"dump_hummus",type:"水餃",taste:"savory",dish:"純米水餃＋鷹嘴豆泥",extra:"＋燙青菜・水果",a:[],equip:["爐火","電鍋"],protein:"鷹嘴豆泥",o3:false,caffeine:false,prep:"早上",drink:"椰子水",ing:["米水餃","高麗菜","鷹嘴豆","青菜"],steps:["純米水餃冷凍下鍋煮熟","佐鷹嘴豆泥一起吃","配燙青菜與水果"],nutri:{kcal:"約380",carb:"高",starch:"米",fat:"中",prot:"中",meat:"無",grain:"米",vit:"B群、葉酸",min:"鐵、鎂"}},
+  {id:"dump_pumpkin",type:"水餃",taste:"savory",dish:"南瓜菜脯米水餃＋毛豆",extra:"＋水果",a:["大豆"],equip:["爐火","電鍋"],protein:"毛豆",o3:false,caffeine:false,prep:"早上",drink:"椰子水",ing:["米水餃","南瓜","菜脯","毛豆"],steps:["南瓜菜脯米水餃冷凍下鍋煮熟","毛豆燙熟","配一份水果"],nutri:{kcal:"約380",carb:"高",starch:"米",fat:"低中",prot:"中高",meat:"無",grain:"米",vit:"A、C",min:"鐵、鉀"}},
+  {id:"riceball",type:"飯糰",taste:"savory",dish:"鮭魚糙米飯糰",extra:"＋海苔・水果",a:["魚"],equip:["電鍋"],protein:"鮭魚",o3:true,caffeine:false,prep:"前晚備飯",drink:"椰子水",ing:["糙米","飯糰","鮭魚","海苔"],steps:["前晚電鍋煮好糙米飯","早上包入鮭魚、以海苔捲起","附一份水果"],nutri:{kcal:"約380",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"魚",grain:"糙米",vit:"D、B12",min:"碘、鎂"}},
+  {id:"b_tuna_toast",type:"米吐司",taste:"savory",meal:"早餐",dish:"鮪魚蔬菜米吐司",extra:"＋小黃瓜",a:["魚"],equip:[],protein:"鮪魚",o3:true,caffeine:false,quick:true,prep:"早上",drink:"椰子水",ing:["米吐司","鮪魚","蔬菜","小黃瓜"],steps:["水煮鮪魚瀝乾，與切碎蔬菜拌勻","鋪在米吐司上"],nutri:{kcal:"約350",carb:"中",starch:"米",fat:"中",prot:"高",meat:"魚",grain:"米",vit:"D、B12",min:"硒"}},
+  {id:"b_chicken_bagel",type:"米貝果",taste:"savory",meal:"早餐",dish:"雞胸肉生菜米貝果",extra:"用前晚備好的雞胸肉",a:[],equip:[],protein:"雞胸肉",o3:false,caffeine:false,quick:true,prep:"早上",drink:"椰子水",ing:["米貝果","雞胸肉","生菜","番茄"],steps:["糙米貝果剖半","夾入備好的雞胸肉片、生菜與番茄"],nutri:{kcal:"約400",carb:"高",starch:"米",fat:"中",prot:"高",meat:"雞",grain:"米",vit:"B群",min:"鐵"}},
+  {id:"b_shrimp_congee",type:"魚粥",taste:"savory",meal:"早餐",dish:"鮮蝦蔬菜粥",extra:"＋海苔",a:["海鮮"],equip:["電鍋","爐火"],protein:"蝦仁",o3:false,caffeine:false,quick:false,prep:"前晚備粥底",drink:"椰子水",ing:["蝦","粥","米","蔬菜","海苔"],steps:["前晚備好粥底","早上加蝦仁與蔬菜煮熟，撒海苔"],nutri:{kcal:"約340",carb:"高",starch:"米",fat:"低中",prot:"高",meat:"海鮮",grain:"米",vit:"B12",min:"碘、硒"}},
+  {id:"b_avo_salmon",type:"米吐司",taste:"savory",meal:"早餐",dish:"酪梨鮭魚米吐司",extra:"用熟鮭魚",a:["魚"],equip:[],protein:"鮭魚",o3:true,caffeine:false,quick:true,prep:"早上",drink:"椰子水",ing:["米吐司","酪梨","鮭魚"],steps:["酪梨壓泥抹米吐司","鋪上熟鮭魚碎"],nutri:{kcal:"約400",carb:"中",starch:"米",fat:"中高",prot:"高",meat:"魚",grain:"米",vit:"D、E",min:"鉀、硒"}},
+  {id:"b_yogurt_bowl",type:"優格碗",taste:"sweet",meal:"早餐",dish:"優格堅果水果碗",extra:"＋亞麻仁粉",a:["奶","堅果"],equip:[],protein:"希臘優格＋核桃",o3:true,caffeine:false,quick:true,prep:"早上",drink:"椰子水",ing:["優格","水果","核桃","亞麻仁"],steps:["希臘優格盛碗","加水果、核桃、亞麻仁粉"],nutri:{kcal:"約320",carb:"中",starch:"無",fat:"中高",prot:"高",meat:"無",grain:"無",vit:"C、B12、E",min:"鈣、鎂"}},
+  {id:"b_sp_chicken",type:"沙拉",taste:"savory",meal:"早餐",dish:"地瓜雞肉沙拉",extra:"用備好的地瓜與雞肉",a:[],equip:[],protein:"雞胸肉",o3:false,caffeine:false,quick:true,prep:"早上",drink:"椰子水",ing:["地瓜","雞胸肉","生菜","番茄"],steps:["備好的地瓜切塊","與雞胸肉片、生菜、番茄拌成一碗"],nutri:{kcal:"約380",carb:"高",starch:"地瓜",fat:"低中",prot:"高",meat:"雞",grain:"無（地瓜）",vit:"A、C",min:"鉀、鐵"}},
+  {id:"b_miso_riceball",type:"飯糰",taste:"savory",meal:"早餐",dish:"味噌鮭魚飯糰",extra:"＋海苔",a:["魚","大豆"],equip:["電鍋"],protein:"鮭魚",o3:true,caffeine:false,quick:true,prep:"前晚備飯",drink:"椰子水",ing:["糙米","飯糰","鮭魚","味噌","海苔"],steps:["前晚煮好糙米飯","早上包入味噌鮭魚，海苔捲起"],nutri:{kcal:"約390",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"魚",grain:"糙米",vit:"D、B12",min:"碘"}},
+  {id:"b_pumpkin_oat",type:"燕麥粥",taste:"sweet",meal:"早餐",dish:"南瓜核桃燕麥粥",extra:"＋亞麻仁粉",a:["堅果"],equip:["微波爐","爐火"],protein:"核桃",o3:true,caffeine:false,quick:true,prep:"早上",drink:"椰子水",ing:["南瓜","燕麥","核桃","亞麻仁"],steps:["南瓜泥與燕麥加水微波煮軟","放核桃、亞麻仁粉"],nutri:{kcal:"約350",carb:"高",starch:"燕麥、南瓜",fat:"中",prot:"中",meat:"無",grain:"燕麥",vit:"A、E",min:"鎂、鉀"}},
+  {id:"b_soy_oat",type:"燕麥飲",taste:"sweet",meal:"早餐",dish:"香蕉豆漿燕麥飲",extra:"果汁機打勻",a:["大豆"],equip:["果汁機"],protein:"豆漿",o3:false,caffeine:false,quick:true,prep:"早上",drink:"奶昔本身",ing:["豆漿","燕麥","香蕉"],steps:["豆漿、燕麥、香蕉打勻","倒杯即飲"],nutri:{kcal:"約320",carb:"高",starch:"燕麥",fat:"低中",prot:"中高",meat:"無",grain:"燕麥",vit:"B群",min:"鈣"}},
+  {id:"b_chickpea_rice",type:"蔬菜飯",taste:"savory",meal:"早餐",dish:"鷹嘴豆玉米蔬菜飯",extra:"用備好的飯",a:[],equip:[],protein:"鷹嘴豆",o3:false,caffeine:false,quick:true,prep:"早上",drink:"椰子水",ing:["鷹嘴豆","玉米","蔬菜","糙米飯"],steps:["備好的糙米飯拌入鷹嘴豆、玉米與蔬菜","微波加熱"],nutri:{kcal:"約400",carb:"高",starch:"糙米",fat:"低中",prot:"中高",meat:"無",grain:"糙米",vit:"C、葉酸",min:"鐵、鎂"}},
+  {id:"l_chicken_noodle",type:"炒麵",taste:"savory",meal:"午餐",dish:"雞胸肉蔬菜炒米粉",extra:"純米米粉",a:[],equip:["爐火"],protein:"雞胸肉",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["米粉","雞胸肉","蔬菜","高麗菜"],steps:["米粉泡軟","與雞胸肉絲、蔬菜一起炒熟調味"],nutri:{kcal:"約480",carb:"高",starch:"米",fat:"中",prot:"高",meat:"雞",grain:"米",vit:"A、B群",min:"鐵"}},
+  {id:"l_shrimp_fry",type:"炒飯",taste:"savory",meal:"午餐",dish:"蒜香蝦仁炒飯",extra:"＋蔬菜",a:["海鮮"],equip:["爐火"],protein:"蝦仁",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["蝦","糙米飯","蔬菜","蒜"],steps:["蝦仁炒香","加飯與蔬菜快炒調味"],nutri:{kcal:"約500",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"海鮮",grain:"糙米",vit:"B12",min:"碘、硒"}},
+  {id:"l_beef_soup_noodle",type:"湯麵",taste:"savory",meal:"午餐",dish:"番茄牛肉湯米線",extra:"純米米線",a:[],equip:["爐火"],protein:"牛肉",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["米線","牛肉","番茄","蔬菜"],steps:["番茄牛肉煮成湯","加燙好的米線與青菜"],nutri:{kcal:"約500",carb:"高",starch:"米",fat:"中",prot:"高",meat:"牛",grain:"米",vit:"C、B12",min:"鐵、鋅"}},
+  {id:"l_teriyaki_chicken",type:"丼飯",taste:"savory",meal:"午餐",dish:"照燒雞胸丼",extra:"＋糙米飯",a:["大豆"],equip:["爐火","電鍋"],protein:"雞胸肉",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["雞胸肉","糙米飯","蔬菜","醬油"],steps:["雞胸肉煎熟、以薄照燒醬調味","鋪在糙米飯上配燙青菜"],nutri:{kcal:"約520",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"雞",grain:"糙米",vit:"B群",min:"鐵"}},
+  {id:"l_tofu_curry",type:"咖哩飯",taste:"savory",meal:"午餐",dish:"蔬菜豆腐咖哩飯",extra:"素食",a:["大豆"],equip:["爐火","電鍋"],protein:"豆腐",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["豆腐","蔬菜","糙米飯"],steps:["蔬菜與豆腐炒香","加水與咖哩煮稠，淋在飯上"],nutri:{kcal:"約470",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"無",grain:"糙米",vit:"A、C",min:"鈣、鐵"}},
+  {id:"l_squid_rice",type:"燴飯",taste:"savory",meal:"午餐",dish:"花枝蔬菜燴飯",extra:"＋糙米飯",a:["海鮮"],equip:["爐火","電鍋"],protein:"花枝",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["花枝","蔬菜","糙米飯"],steps:["花枝與蔬菜快炒","勾薄芡淋在糙米飯上"],nutri:{kcal:"約470",carb:"高",starch:"糙米",fat:"低中",prot:"高",meat:"海鮮",grain:"糙米",vit:"B12",min:"碘、硒"}},
+  {id:"l_beef_pasta",type:"義大利麵",taste:"savory",meal:"午餐",dish:"番茄牛肉豌豆義大利麵",extra:"高蛋白",a:[],equip:["爐火"],protein:"牛肉＋豌豆麵",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["豌豆麵","牛肉","番茄","蔬菜"],steps:["牛肉番茄炒成醬","拌入煮好的豌豆義大利麵"],nutri:{kcal:"約520",carb:"高",starch:"豌豆麵",fat:"中",prot:"高",meat:"牛",grain:"豌豆",vit:"C、B12",min:"鐵、鋅"}},
+  {id:"l_steam_cod",type:"定食",taste:"savory",meal:"午餐",dish:"蒸鱈魚蔬菜飯",extra:"＋糙米飯",a:["魚"],equip:["電鍋"],protein:"鱈魚",o3:true,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["鱈魚","蔬菜","糙米飯"],steps:["鱈魚與蔬菜蒸熟","配糙米飯"],nutri:{kcal:"約460",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"魚",grain:"糙米",vit:"D、B12",min:"碘、硒"}},
+  {id:"l_veg_rice",type:"炊飯",taste:"savory",meal:"午餐",dish:"三色蔬菜炊飯",extra:"素食一鍋",a:[],equip:["電鍋"],protein:"毛豆",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["毛豆","玉米","紅蘿蔔","糙米飯"],steps:["蔬菜與糙米放入電鍋同煮","拌勻"],nutri:{kcal:"約420",carb:"高",starch:"糙米",fat:"低中",prot:"中高",meat:"無",grain:"糙米",vit:"A、C",min:"鐵"}},
+  {id:"l_chicken_congee",type:"粥",taste:"savory",meal:"午餐",dish:"雞肉蔬菜粥",extra:"溫和好消化",a:[],equip:["電鍋","爐火"],protein:"雞胸肉",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["雞胸肉","粥","米","蔬菜"],steps:["粥底加雞胸肉絲與蔬菜煮滾","調味"],nutri:{kcal:"約400",carb:"高",starch:"米",fat:"低中",prot:"高",meat:"雞",grain:"米",vit:"B群",min:"鐵"}},
+  {id:"l_shrimp_misua",type:"湯麵",taste:"savory",meal:"午餐",dish:"鮮蝦蔬菜米線",extra:"純米米線",a:["海鮮"],equip:["爐火"],protein:"蝦仁",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["米線","蝦","蔬菜","高麗菜"],steps:["高湯煮滾","下米線、蝦仁與蔬菜煮熟"],nutri:{kcal:"約440",carb:"高",starch:"米",fat:"低中",prot:"高",meat:"海鮮",grain:"米",vit:"B12",min:"碘"}},
+  {id:"l_pork_rice",type:"燴飯",taste:"savory",meal:"午餐",dish:"豬肉白菜燴飯",extra:"＋糙米飯",a:[],equip:["爐火","電鍋"],protein:"豬肉",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["豬肉","白菜","蔬菜","糙米飯"],steps:["豬肉片與白菜燴煮軟","盛在糙米飯上"],nutri:{kcal:"約520",carb:"高",starch:"糙米",fat:"中高",prot:"高",meat:"豬",grain:"糙米",vit:"B1",min:"鐵、鋅"}},
+  {id:"l_edamame_chicken_fry",type:"炒飯",taste:"savory",meal:"午餐",dish:"毛豆玉米雞肉炒飯",extra:"＋蔬菜",a:["大豆"],equip:["爐火"],protein:"雞胸肉＋毛豆",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["雞胸肉","毛豆","玉米","糙米飯"],steps:["雞胸肉丁炒熟","加飯、毛豆、玉米快炒"],nutri:{kcal:"約510",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"雞",grain:"糙米",vit:"B群",min:"鐵"}},
+  {id:"d_pan_chicken",type:"定食",taste:"savory",meal:"晚餐",dish:"香煎雞胸肉＋馬鈴薯＋蔬菜",extra:"均衡一盤",a:[],equip:["爐火"],protein:"雞胸肉",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["雞胸肉","馬鈴薯","蔬菜"],steps:["雞胸肉煎熟","配香煎馬鈴薯與燙蔬菜"],nutri:{kcal:"約480",carb:"中高",starch:"馬鈴薯",fat:"中",prot:"高",meat:"雞",grain:"無（馬鈴薯）",vit:"C、B群",min:"鉀、鐵"}},
+  {id:"d_beef_stew",type:"燉飯",taste:"savory",meal:"晚餐",dish:"番茄燉牛肉飯",extra:"＋糙米飯",a:[],equip:["爐火","電鍋"],protein:"牛肉",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["牛肉","番茄","蔬菜","糙米飯"],steps:["牛肉與番茄、蔬菜燉軟","配糙米飯"],nutri:{kcal:"約540",carb:"高",starch:"糙米",fat:"中高",prot:"高",meat:"牛",grain:"糙米",vit:"C、B12",min:"鐵、鋅"}},
+  {id:"d_grill_mackerel",type:"定食",taste:"savory",meal:"晚餐",dish:"鹽烤鯖魚定食",extra:"＋糙米飯＋青菜",a:["魚"],equip:["烤箱","爐火","電鍋"],protein:"鯖魚",o3:true,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["鯖魚","糙米飯","青菜"],steps:["鯖魚抹薄鹽烤或煎熟","配糙米飯與燙青菜"],nutri:{kcal:"約520",carb:"高",starch:"糙米",fat:"中高",prot:"高",meat:"魚",grain:"糙米",vit:"D、B12",min:"碘、硒"}},
+  {id:"d_garlic_shrimp",type:"定食",taste:"savory",meal:"晚餐",dish:"蒜蓉蝦仁蔬菜＋飯",extra:"＋糙米飯",a:["海鮮"],equip:["爐火","電鍋"],protein:"蝦仁",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["蝦","蔬菜","糙米飯","蒜"],steps:["蒜蓉炒香蝦仁與蔬菜","配糙米飯"],nutri:{kcal:"約470",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"海鮮",grain:"糙米",vit:"B12",min:"碘、硒"}},
+  {id:"d_mapo_tofu",type:"燴飯",taste:"savory",meal:"晚餐",dish:"不辣麻婆豆腐＋飯",extra:"素食",a:["大豆"],equip:["爐火","電鍋"],protein:"豆腐",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["豆腐","蔬菜","糙米飯"],steps:["豆腐與蔬菜燴煮（不加辣）","勾薄芡淋在飯上"],nutri:{kcal:"約450",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"無",grain:"糙米",vit:"B群",min:"鈣、鐵"}},
+  {id:"d_sukiyaki_chicken",type:"鍋物",taste:"savory",meal:"晚餐",dish:"雞肉蔬菜壽喜燒＋飯",extra:"＋糙米飯",a:["大豆"],equip:["爐火","電鍋"],protein:"雞胸肉",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["雞胸肉","蔬菜","豆腐","糙米飯"],steps:["雞肉、豆腐、蔬菜以薄醬油高湯煮","配糙米飯"],nutri:{kcal:"約500",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"雞",grain:"糙米",vit:"A、B群",min:"鐵"}},
+  {id:"d_squid_pasta",type:"義大利麵",taste:"savory",meal:"晚餐",dish:"花枝番茄豌豆義大利麵",extra:"高蛋白",a:["海鮮"],equip:["爐火"],protein:"花枝＋豌豆麵",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["豌豆麵","花枝","番茄","蔬菜"],steps:["花枝與番茄炒成醬","拌入煮好的豌豆義大利麵"],nutri:{kcal:"約500",carb:"高",starch:"豌豆麵",fat:"中",prot:"高",meat:"海鮮",grain:"豌豆",vit:"C、B12",min:"碘、鐵"}},
+  {id:"d_tofu_pot",type:"煲飯",taste:"savory",meal:"晚餐",dish:"蔬菜豆腐煲＋飯",extra:"素食",a:["大豆"],equip:["爐火","電鍋"],protein:"豆腐",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["豆腐","蔬菜","香菇","糙米飯"],steps:["豆腐、香菇與蔬菜燴煮入味","配糙米飯"],nutri:{kcal:"約450",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"無",grain:"糙米",vit:"D、B群",min:"鈣、鐵"}},
+  {id:"d_roast_chicken_leg",type:"定食",taste:"savory",meal:"晚餐",dish:"香烤雞腿＋飯＋蔬菜",extra:"去皮較清爽",a:[],equip:["烤箱","電鍋"],protein:"雞腿",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["雞腿","糙米飯","蔬菜"],steps:["雞腿抹薄鹽烤熟","配糙米飯與烤蔬菜"],nutri:{kcal:"約540",carb:"高",starch:"糙米",fat:"中高",prot:"高",meat:"雞",grain:"糙米",vit:"B群",min:"鐵、鋅"}},
+  {id:"d_beef_curry",type:"咖哩飯",taste:"savory",meal:"晚餐",dish:"牛肉蔬菜咖哩飯",extra:"＋糙米飯",a:[],equip:["爐火","電鍋"],protein:"牛肉",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["牛肉","蔬菜","糙米飯"],steps:["牛肉與蔬菜炒香","加水與咖哩煮稠，淋在飯上"],nutri:{kcal:"約550",carb:"高",starch:"糙米",fat:"中高",prot:"高",meat:"牛",grain:"糙米",vit:"A、B12",min:"鐵、鋅"}},
+  {id:"d_steam_bass",type:"定食",taste:"savory",meal:"晚餐",dish:"清蒸鱸魚＋飯＋青菜",extra:"清爽好消化",a:["魚"],equip:["電鍋","爐火"],protein:"鱸魚",o3:true,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["鱸魚","糙米飯","青菜","薑"],steps:["鱸魚放薑蒸熟","配糙米飯與燙青菜"],nutri:{kcal:"約470",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"魚",grain:"糙米",vit:"D、B12",min:"碘、硒"}},
+  {id:"d_veg_tofu_don",type:"蓋飯",taste:"savory",meal:"晚餐",dish:"三蔬豆腐蓋飯",extra:"素食",a:["大豆"],equip:["爐火","電鍋"],protein:"豆腐",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["豆腐","青花菜","紅蘿蔔","糙米飯"],steps:["三種蔬菜與豆腐燴煮","盛在糙米飯上"],nutri:{kcal:"約440",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"無",grain:"糙米",vit:"A、C、K",min:"鈣、鐵"}},
+  {id:"d_pork_dumpling",type:"水餃",taste:"savory",meal:"晚餐",dish:"豬肉高麗菜蒸餃＋湯",extra:"純米水餃",a:[],equip:["爐火","電鍋"],protein:"豬肉",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["米水餃","豬肉","高麗菜","蔬菜"],steps:["純米豬肉水餃蒸或煮熟","配一碗蔬菜湯"],nutri:{kcal:"約500",carb:"高",starch:"米",fat:"中",prot:"高",meat:"豬",grain:"米",vit:"B1",min:"鐵、鋅"}},
+  {id:"d_pumpkin_soup",type:"濃湯",taste:"savory",meal:"晚餐",dish:"南瓜蔬菜濃湯＋米麵包",extra:"素食",a:[],equip:["爐火","果汁機"],protein:"鷹嘴豆",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["南瓜","鷹嘴豆","蔬菜","米吐司"],steps:["南瓜與蔬菜煮軟打成濃湯","加鷹嘴豆，配米麵包"],nutri:{kcal:"約430",carb:"高",starch:"南瓜、米",fat:"中",prot:"中高",meat:"無",grain:"米",vit:"A、C",min:"鐵、鉀"}},
+  {id:"bv_egg_toast",type:"米吐司",taste:"savory",meal:"早餐",dish:"蔬菜蛋米吐司",extra:"蛋素",a:["蛋"],equip:["爐火"],protein:"蛋",o3:false,caffeine:false,quick:true,prep:"早上",drink:"椰子水",ing:["米吐司","蛋","菠菜","番茄"],steps:["蛋與菠菜炒熟","夾入米吐司，配番茄"],nutri:{kcal:"約350",carb:"中",starch:"米",fat:"中",prot:"高",meat:"無",grain:"米",vit:"A、D、B12",min:"鐵"}},
+  {id:"bv_cheese_toast",type:"米吐司",taste:"savory",meal:"早餐",dish:"起司番茄米吐司",extra:"奶素",a:["奶"],equip:[],protein:"起司",o3:false,caffeine:false,quick:true,prep:"早上",drink:"椰子水",ing:["米吐司","起司","番茄"],steps:["米吐司鋪起司片與番茄","可略烤至起司融化"],nutri:{kcal:"約360",carb:"中",starch:"米",fat:"中高",prot:"中高",meat:"無",grain:"米",vit:"A、C",min:"鈣"}},
+  {id:"bv_veg_congee",type:"粥",taste:"savory",meal:"早餐",dish:"蔬菜豆腐粥",extra:"全素",a:["大豆"],equip:["電鍋","爐火"],protein:"豆腐",o3:false,caffeine:false,quick:false,prep:"前晚備粥底",drink:"椰子水",ing:["豆腐","粥","米","蔬菜","海苔"],steps:["粥底加豆腐丁與蔬菜煮滾","撒海苔"],nutri:{kcal:"約320",carb:"高",starch:"米",fat:"低中",prot:"中高",meat:"無",grain:"米",vit:"A、C",min:"鈣、鐵"}},
+  {id:"bv_millet_sp",type:"粥",taste:"sweet",meal:"早餐",dish:"小米地瓜粥",extra:"全素、溫和",a:[],equip:["電鍋","微波爐"],protein:"南瓜籽",o3:false,caffeine:false,quick:true,prep:"早上",drink:"椰子水",ing:["小米","地瓜","南瓜籽"],steps:["備好的小米地瓜粥加熱","撒南瓜籽"],nutri:{kcal:"約320",carb:"高",starch:"小米、地瓜",fat:"低中",prot:"中",meat:"無",grain:"小米",vit:"A、B群",min:"鎂、鉀"}},
+  {id:"lv_veg_pasta",type:"義大利麵",taste:"savory",meal:"午餐",dish:"番茄蔬菜豌豆義大利麵",extra:"全素、高蛋白",a:[],equip:["爐火"],protein:"豌豆麵",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["豌豆麵","番茄","蔬菜"],steps:["豌豆麵煮熟","拌番茄醬與炒蔬菜"],nutri:{kcal:"約450",carb:"高",starch:"豌豆麵",fat:"中",prot:"高",meat:"無",grain:"豌豆",vit:"C、A",min:"鐵、鎂"}},
+  {id:"lv_tofu_don2",type:"丼飯",taste:"savory",meal:"午餐",dish:"照燒豆腐丼",extra:"全素",a:["大豆"],equip:["爐火","電鍋"],protein:"豆腐",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["豆腐","糙米飯","蔬菜","醬油"],steps:["豆腐煎香、以薄照燒醬調味","鋪在糙米飯上配燙青菜"],nutri:{kcal:"約470",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"無",grain:"糙米",vit:"B群",min:"鈣、鐵"}},
+  {id:"lv_veg_curry",type:"咖哩飯",taste:"savory",meal:"午餐",dish:"蔬菜咖哩飯",extra:"全素",a:[],equip:["爐火","電鍋"],protein:"鷹嘴豆",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["馬鈴薯","紅蘿蔔","鷹嘴豆","糙米飯"],steps:["蔬菜與鷹嘴豆加咖哩煮軟","淋在糙米飯上"],nutri:{kcal:"約470",carb:"高",starch:"糙米、馬鈴薯",fat:"中",prot:"中高",meat:"無",grain:"糙米",vit:"A、C",min:"鐵、鉀"}},
+  {id:"lv_egg_fry",type:"炒飯",taste:"savory",meal:"午餐",dish:"蔬菜蛋炒飯",extra:"蛋素",a:["蛋"],equip:["爐火"],protein:"蛋",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["蛋","糙米飯","蔬菜","玉米"],steps:["蛋炒散","加飯與蔬菜快炒調味"],nutri:{kcal:"約480",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"無",grain:"糙米",vit:"A、D",min:"鐵"}},
+  {id:"lm_chicken_don",type:"蓋飯",taste:"savory",meal:"午餐",dish:"雞肉蔬菜蓋飯",extra:"＋糙米飯",a:["大豆"],equip:["爐火","電鍋"],protein:"雞胸肉",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["雞胸肉","蔬菜","糙米飯","醬油"],steps:["雞胸肉與蔬菜燴煮調味","鋪在糙米飯上"],nutri:{kcal:"約510",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"雞",grain:"糙米",vit:"B群",min:"鐵"}},
+  {id:"lm_beef_don",type:"蓋飯",taste:"savory",meal:"午餐",dish:"蔬菜牛肉蓋飯",extra:"＋糙米飯",a:["大豆"],equip:["爐火","電鍋"],protein:"牛肉",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["牛肉","蔬菜","糙米飯","醬油"],steps:["牛肉片與蔬菜快煮調味","鋪在糙米飯上"],nutri:{kcal:"約530",carb:"高",starch:"糙米",fat:"中高",prot:"高",meat:"牛",grain:"糙米",vit:"B12",min:"鐵、鋅"}},
+  {id:"lm_seafood_congee",type:"粥",taste:"savory",meal:"午餐",dish:"海鮮蔬菜粥",extra:"魚蝦花枝",a:["海鮮","魚"],equip:["電鍋","爐火"],protein:"海鮮",o3:true,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["蝦","花枝","粥","米","蔬菜"],steps:["粥底加海鮮與蔬菜煮熟","調味"],nutri:{kcal:"約400",carb:"高",starch:"米",fat:"低中",prot:"高",meat:"海鮮",grain:"米",vit:"B12",min:"碘、硒"}},
+  {id:"dv_curry_tofu_pot",type:"鍋物",taste:"savory",meal:"晚餐",dish:"蔬菜咖哩豆腐鍋＋飯",extra:"全素",a:["大豆"],equip:["爐火","電鍋"],protein:"豆腐",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["豆腐","蔬菜","咖哩","糙米飯"],steps:["豆腐與蔬菜以咖哩湯底煮","配糙米飯"],nutri:{kcal:"約470",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"無",grain:"糙米",vit:"A、C",min:"鈣、鐵"}},
+  {id:"dv_tomato_rice",type:"燉飯",taste:"savory",meal:"晚餐",dish:"番茄蔬菜燉飯",extra:"全素",a:[],equip:["爐火","電鍋"],protein:"鷹嘴豆",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["番茄","蔬菜","鷹嘴豆","糙米飯"],steps:["番茄與蔬菜、鷹嘴豆燉煮","拌入糙米飯燉香"],nutri:{kcal:"約460",carb:"高",starch:"糙米",fat:"中",prot:"中高",meat:"無",grain:"糙米",vit:"C、A",min:"鐵、鎂"}},
+  {id:"dv_steam_egg",type:"定食",taste:"savory",meal:"晚餐",dish:"蒸蛋蔬菜豆腐飯",extra:"蛋素",a:["蛋","大豆"],equip:["電鍋"],protein:"蛋＋豆腐",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["蛋","豆腐","蔬菜","糙米飯"],steps:["蛋加水蒸成滑蛋、放豆腐蔬菜","配糙米飯"],nutri:{kcal:"約450",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"無",grain:"糙米",vit:"A、D、B12",min:"鈣、鐵"}},
+  {id:"dm_lemon_chicken",type:"定食",taste:"savory",meal:"晚餐",dish:"檸檬雞胸蔬菜飯",extra:"清爽",a:[],equip:["爐火","電鍋"],protein:"雞胸肉",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["雞胸肉","檸檬","蔬菜","糙米飯"],steps:["雞胸肉煎熟、擠檸檬","配糙米飯與蔬菜"],nutri:{kcal:"約490",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"雞",grain:"糙米",vit:"C、B群",min:"鐵"}},
+  {id:"dm_pepper_beef",type:"燴飯",taste:"savory",meal:"晚餐",dish:"青椒牛肉飯",extra:"＋糙米飯",a:["大豆"],equip:["爐火","電鍋"],protein:"牛肉",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["牛肉","青椒","蔬菜","糙米飯"],steps:["牛肉與青椒快炒調味","鋪在糙米飯上"],nutri:{kcal:"約530",carb:"高",starch:"糙米",fat:"中高",prot:"高",meat:"牛",grain:"糙米",vit:"C、B12",min:"鐵、鋅"}},
+  {id:"dm_teriyaki_salmon",type:"定食",taste:"savory",meal:"晚餐",dish:"照燒鮭魚飯",extra:"＋燙青菜",a:["魚","大豆"],equip:["爐火","電鍋"],protein:"鮭魚",o3:true,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["鮭魚","糙米飯","蔬菜","醬油"],steps:["鮭魚煎熟、刷薄照燒醬","配糙米飯與燙青菜"],nutri:{kcal:"約520",carb:"高",starch:"糙米",fat:"中高",prot:"高",meat:"魚",grain:"糙米",vit:"D、B12",min:"碘、硒"}},
+  {id:"dm_shrimp_tofu",type:"煲飯",taste:"savory",meal:"晚餐",dish:"蝦仁豆腐煲＋飯",extra:"＋糙米飯",a:["海鮮","大豆"],equip:["爐火","電鍋"],protein:"蝦仁＋豆腐",o3:false,caffeine:false,quick:false,prep:"現做",drink:"開水",ing:["蝦","豆腐","蔬菜","糙米飯"],steps:["蝦仁與豆腐、蔬菜燴煮","配糙米飯"],nutri:{kcal:"約490",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"海鮮",grain:"糙米",vit:"B12",min:"碘、鈣"}},
+  {id:"miso_rice",type:"味噌湯飯",taste:"savory",dish:"味噌豆腐海帶芽湯＋糙米飯",extra:"溫暖鹹口",a:["大豆"],equip:["電鍋","爐火"],protein:"豆腐",o3:false,caffeine:false,prep:"前晚預約飯",drink:"椰子水",ing:["味噌","豆腐","海帶芽","糙米飯"],steps:["前晚電鍋預約糙米飯","早上味噌化入熱水，加嫩豆腐與海帶芽煮滾","配飯"],nutri:{kcal:"約350",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"無",grain:"糙米",vit:"B群、K",min:"鈣、碘、鐵"}},
+  {id:"salmon_fried",type:"炒飯",taste:"savory",dish:"鮭魚糙米炒飯",extra:"＋蔬菜",a:["魚"],equip:["爐火"],protein:"鮭魚",o3:true,caffeine:false,prep:"前晚備飯",drink:"椰子水",ing:["糙米飯","鮭魚","蔬菜"],steps:["前晚煮好糙米飯","早上快炒糙米飯、鮭魚與切碎蔬菜","調味起鍋"],nutri:{kcal:"約420",carb:"高",starch:"糙米",fat:"中高",prot:"高",meat:"魚",grain:"糙米",vit:"D、B12、A",min:"碘、鎂"}},
+  {id:"pancake",type:"燕麥軟餅",taste:"sweet",dish:"香蕉燕麥軟餅",extra:"冷凍回烤＋莓果",a:[],equip:["爐火","烤箱"],protein:"燕麥（配奶更佳）",o3:false,caffeine:false,prep:"週末做",drink:"牛奶",ing:["香蕉","燕麥","莓果"],steps:["熟香蕉壓泥＋燕麥片（可打細）＋少許液體拌成糊","小火煎成小軟餅（可週末多做冷凍）","早上回烤，配莓果"],nutri:{kcal:"約350",carb:"高",starch:"燕麥",fat:"中",prot:"中",meat:"無",grain:"燕麥",vit:"C、B群",min:"鎂、鉀"}},
+  {id:"oat_cake_rice",type:"燕麥糕",taste:"sweet",dish:"香蕉核桃燕麥糕",extra:"可冷凍、回蒸",a:["堅果"],equip:["電鍋"],protein:"核桃",o3:true,caffeine:false,prep:"週末做",drink:"椰子水",ing:["燕麥","香蕉","核桃","亞麻仁"],steps:["熟香蕉壓泥＋燕麥片＋核桃＋亞麻仁粉＋少許水拌成糊","倒入耐熱容器，電鍋外鍋一杯水蒸熟","放涼切塊冷凍；早上回蒸或微波"],nutri:{kcal:"約350",carb:"高",starch:"燕麥",fat:"中高",prot:"中",meat:"無",grain:"燕麥",vit:"B群、E",min:"鎂、鐵"}},
+  {id:"energy_ball",type:"能量球",taste:"sweet",dish:"燕麥椰棗能量球",extra:"可一次做一批",a:["堅果"],equip:["果汁機"],protein:"堅果醬",o3:true,caffeine:false,prep:"週末做",drink:"椰子水",ing:["椰棗","燕麥","堅果醬","亞麻仁"],steps:["椰棗去核＋燕麥片＋堅果醬＋亞麻仁粉用調理機打碎","搓成小球，冷藏定型","早上拿 2-3 顆，配一份水果"],nutri:{kcal:"約300",carb:"高",starch:"燕麥",fat:"中高",prot:"中",meat:"無",grain:"燕麥",vit:"B群、E",min:"鎂、鐵、鉀"}},
+  {id:"chia_bowl",type:"果昔碗",taste:"sweet",dish:"奇亞籽莓果果昔碗",extra:"打成滑順、不怕顆粒感",a:[],equip:["果汁機"],protein:"奇亞籽＋南瓜籽",o3:true,caffeine:false,prep:"早上",drink:"椰子水",ing:["莓果","香蕉","奇亞籽","南瓜籽"],steps:["果汁機放莓果、香蕉、椰子水打成濃果昔","拌入奇亞籽（或一起打細）","倒入碗中撒南瓜籽，靜置幾分鐘"],nutri:{kcal:"約300",carb:"中高",starch:"無",fat:"中",prot:"中",meat:"無",grain:"無",vit:"C、A、E",min:"鈣、鎂"}},
+  {id:"porr_nut",type:"燕麥粥",taste:"sweet",dish:"熱燕麥粥＋香蕉＋核桃",extra:"＋亞麻仁粉",a:["堅果"],equip:["微波爐","爐火"],protein:"核桃",o3:true,caffeine:false,prep:"早上",drink:"椰子水",ing:["燕麥","香蕉","核桃","亞麻仁"],steps:["燕麥片加水或椰子水微波 2-3 分鐘","放香蕉、核桃","撒亞麻仁粉"],nutri:{kcal:"約360",carb:"高",starch:"燕麥",fat:"中高",prot:"中",meat:"無",grain:"燕麥",vit:"B群、E",min:"鎂、鐵"}},
+  {id:"porr_seed",type:"燕麥粥",taste:"sweet",dish:"熱燕麥粥＋香蕉＋南瓜籽",extra:"＋亞麻仁粉",a:[],equip:["微波爐","爐火"],protein:"南瓜籽",o3:true,caffeine:false,prep:"早上",drink:"椰子水",ing:["燕麥","香蕉","南瓜籽","亞麻仁"],steps:["燕麥片加水微波 2-3 分鐘","放香蕉、南瓜籽","撒亞麻仁粉"],nutri:{kcal:"約340",carb:"高",starch:"燕麥",fat:"中",prot:"中",meat:"無",grain:"燕麥",vit:"B群、E",min:"鎂、鋅"}},
+  {id:"pumpkin_hummus",type:"蒸南瓜",taste:"savory",dish:"蒸南瓜＋鷹嘴豆泥＋米吐司",extra:"無大豆無堅果",a:[],equip:["電鍋","微波爐"],protein:"鷹嘴豆泥",o3:false,caffeine:false,prep:"早上",drink:"椰子水",ing:["南瓜","鷹嘴豆","米吐司","南瓜籽"],steps:["南瓜蒸或微波至軟","配鷹嘴豆泥與米吐司","撒南瓜籽"],nutri:{kcal:"約330",carb:"高",starch:"米",fat:"中",prot:"中",meat:"無",grain:"米",vit:"A、C、葉酸",min:"鐵、鉀"}},
+  {id:"fruit_seed",type:"水果盤",taste:"sweet",dish:"綜合水果＋南瓜籽＋米吐司",extra:"最少準備的備案",a:[],equip:[],protein:"南瓜籽",o3:false,caffeine:false,prep:"早上",drink:"椰子水",ing:["水果","南瓜籽","米吐司"],steps:["切一盤綜合水果","撒南瓜籽","配一片米吐司"],nutri:{kcal:"約280",carb:"中高",starch:"米",fat:"中",prot:"低中",meat:"無",grain:"米",vit:"C、A",min:"鉀、鎂"}},
+  {id:"l_pasta",type:"義大利麵",taste:"savory",meal:"午餐",dish:"番茄豌豆義大利麵",extra:"＋炒蔬菜",a:[],equip:["爐火"],protein:"豌豆麵",o3:false,caffeine:false,prep:"現做",drink:"開水",ing:["豌豆麵","番茄","蔬菜"],steps:["豌豆義大利麵煮熟撈起","拌入無添加番茄醬與炒香的蔬菜","盛盤"],nutri:{kcal:"約450",carb:"高",starch:"豌豆麵",fat:"中",prot:"高",meat:"無",grain:"豌豆",vit:"C、A",min:"鐵、鎂"}},
+  {id:"l_curry",type:"咖哩飯",taste:"savory",meal:"午餐",dish:"雞肉蔬菜咖哩飯",extra:"＋糙米飯",a:[],equip:["爐火","電鍋"],protein:"雞肉",o3:false,caffeine:false,prep:"現做",drink:"開水",ing:["雞肉","蔬菜","糙米飯"],steps:["雞肉與蔬菜炒香","加水與咖哩煮至濃稠","淋在糙米飯上"],nutri:{kcal:"約520",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"雞",grain:"糙米",vit:"A、B群",min:"鐵"}},
+  {id:"l_miso_salmon",type:"定食",taste:"savory",meal:"午餐",dish:"味噌鮭魚飯",extra:"＋燙青菜",a:["魚","大豆"],equip:["爐火","電鍋"],protein:"鮭魚",o3:true,caffeine:false,prep:"現做",drink:"開水",ing:["鮭魚","味噌","糙米飯","蔬菜"],steps:["鮭魚抹薄味噌煎或烤熟","配糙米飯與燙青菜","附味噌湯"],nutri:{kcal:"約500",carb:"高",starch:"糙米",fat:"中高",prot:"高",meat:"魚",grain:"糙米",vit:"D、B12",min:"鈣、碘"}},
+  {id:"l_tofu_don",type:"蓋飯",taste:"savory",meal:"午餐",dish:"豆腐蔬菜蓋飯",extra:"＋糙米飯",a:["大豆"],equip:["爐火","電鍋"],protein:"豆腐",o3:false,caffeine:false,prep:"現做",drink:"開水",ing:["豆腐","蔬菜","糙米飯","醬油"],steps:["豆腐與蔬菜下鍋燴煮、以醬油調味","盛在糙米飯上","可撒海苔"],nutri:{kcal:"約450",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"無",grain:"糙米",vit:"A、C",min:"鈣、鐵"}},
+  {id:"l_chickpea_soup",type:"湯飯",taste:"savory",meal:"午餐",dish:"鷹嘴豆蔬菜湯配飯",extra:"＋糙米飯",a:[],equip:["爐火","電鍋"],protein:"鷹嘴豆",o3:false,caffeine:false,prep:"現做",drink:"開水",ing:["鷹嘴豆","番茄","蔬菜","糙米飯"],steps:["鷹嘴豆、番茄、蔬菜加水煮成湯","調味","配一碗糙米飯"],nutri:{kcal:"約430",carb:"高",starch:"糙米",fat:"低中",prot:"中高",meat:"無",grain:"糙米",vit:"C、葉酸",min:"鐵、鎂"}},
+  {id:"l_dumpling_soup",type:"水餃",taste:"savory",meal:"午餐",dish:"純米水餃＋毛豆＋蔬菜湯",extra:"高麗菜口味",a:["大豆"],equip:["爐火"],protein:"毛豆",o3:false,caffeine:false,prep:"現做",drink:"開水",ing:["米水餃","毛豆","高麗菜","蔬菜"],steps:["純米水餃煮熟","毛豆燙熟","配一碗蔬菜清湯"],nutri:{kcal:"約430",carb:"高",starch:"米",fat:"低中",prot:"中高",meat:"無",grain:"米",vit:"C、K",min:"鐵"}},
+  {id:"l_tomato_chicken",type:"燴飯",taste:"savory",meal:"午餐",dish:"番茄燉雞飯",extra:"＋糙米飯",a:[],equip:["爐火","電鍋"],protein:"雞肉",o3:false,caffeine:false,prep:"現做",drink:"開水",ing:["雞肉","番茄","蔬菜","糙米飯"],steps:["雞肉與番茄、蔬菜燉煮入味","盛在糙米飯上"],nutri:{kcal:"約500",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"雞",grain:"糙米",vit:"C、A",min:"鐵"}},
+  {id:"d_steamfish",type:"蒸魚",taste:"savory",meal:"晚餐",dish:"清蒸魚＋糙米飯＋青菜",extra:"清淡好消化",a:["魚"],equip:["電鍋","爐火"],protein:"魚",o3:true,caffeine:false,prep:"現做",drink:"開水",ing:["魚","糙米飯","青菜","薑"],steps:["魚放薑絲，電鍋或蒸鍋蒸熟","燙一份青菜","配糙米飯"],nutri:{kcal:"約480",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"魚",grain:"糙米",vit:"D、B12",min:"碘、硒"}},
+  {id:"d_tofu_tomato",type:"燴飯",taste:"savory",meal:"晚餐",dish:"番茄豆腐蔬菜煮＋飯",extra:"＋糙米飯",a:["大豆"],equip:["爐火","電鍋"],protein:"豆腐",o3:false,caffeine:false,prep:"現做",drink:"開水",ing:["豆腐","番茄","蔬菜","糙米飯"],steps:["番茄炒出味，加豆腐與蔬菜燴煮","調味","配糙米飯"],nutri:{kcal:"約450",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"無",grain:"糙米",vit:"C、A",min:"鈣、鐵"}},
+  {id:"d_chicken_fry",type:"炒飯",taste:"savory",meal:"晚餐",dish:"雞肉時蔬炒飯",extra:"用隔餐飯更好炒",a:[],equip:["爐火"],protein:"雞肉",o3:false,caffeine:false,prep:"現做",drink:"開水",ing:["雞肉","蔬菜","糙米飯"],steps:["雞肉丁炒熟","加飯與切碎蔬菜快炒","調味起鍋"],nutri:{kcal:"約520",carb:"高",starch:"糙米",fat:"中高",prot:"高",meat:"雞",grain:"糙米",vit:"A、B群",min:"鐵"}},
+  {id:"d_beef_rice",type:"燴飯",taste:"savory",meal:"晚餐",dish:"蔬菜牛肉燴飯",extra:"＋糙米飯",a:[],equip:["爐火","電鍋"],protein:"牛肉",o3:false,caffeine:false,prep:"現做",drink:"開水",ing:["牛肉","蔬菜","糙米飯","醬油"],steps:["牛肉片與蔬菜炒香","加少許水與醬油燴煮","盛在糙米飯上"],nutri:{kcal:"約540",carb:"高",starch:"糙米",fat:"中高",prot:"高",meat:"牛",grain:"糙米",vit:"B12",min:"鐵、鋅"}},
+  {id:"d_miso_hotpot",type:"鍋物",taste:"savory",meal:"晚餐",dish:"味噌豆腐鍋＋飯",extra:"＋糙米飯",a:["大豆"],equip:["爐火","電鍋"],protein:"豆腐",o3:false,caffeine:false,prep:"現做",drink:"開水",ing:["味噌","豆腐","蔬菜","海帶芽","糙米飯"],steps:["高湯化入味噌","加豆腐、蔬菜、海帶芽煮滾","配一碗糙米飯"],nutri:{kcal:"約470",carb:"高",starch:"糙米",fat:"中",prot:"高",meat:"無",grain:"糙米",vit:"B群、K",min:"鈣、碘、鐵"}},
+  {id:"d_pumpkin_chicken",type:"燉飯",taste:"savory",meal:"晚餐",dish:"南瓜雞肉燉飯",extra:"綿密好入口",a:[],equip:["爐火","電鍋"],protein:"雞肉",o3:false,caffeine:false,prep:"現做",drink:"開水",ing:["南瓜","雞肉","蔬菜","糙米飯"],steps:["南瓜與雞肉炒香","加飯與水燉煮至綿軟","調味"],nutri:{kcal:"約510",carb:"高",starch:"糙米、南瓜",fat:"中",prot:"高",meat:"雞",grain:"糙米",vit:"A、C",min:"鐵、鉀"}},
+  {id:"d_salmon_rice",type:"炊飯",taste:"savory",meal:"晚餐",dish:"鮭魚蔬菜炊飯",extra:"電鍋一鍋到底",a:["魚"],equip:["電鍋"],protein:"鮭魚",o3:true,caffeine:false,prep:"電鍋預約",drink:"開水",ing:["鮭魚","蔬菜","糙米飯","海苔"],steps:["糙米、鮭魚、切碎蔬菜放入電鍋一起煮","蒸熟後拌勻","撒海苔"],nutri:{kcal:"約500",carb:"高",starch:"糙米",fat:"中高",prot:"高",meat:"魚",grain:"糙米",vit:"D、B12、A",min:"碘、鎂"}}
+];
+
+const CAT={
+  燕麥:["無麩質燕麥片","乾貨"],亞麻仁:["亞麻仁粉","乾貨"],亞麻:["亞麻茴香貝果","米麵包"],核桃:["核桃","乾貨"],堅果醬:["堅果醬","乾貨"],南瓜籽:["南瓜籽","乾貨"],肉桂:["肉桂粉","乾貨"],可可:["無糖可可粉","乾貨"],鷹嘴豆:["鷹嘴豆／鷹嘴豆泥","乾貨"],奇亞籽:["奇亞籽","乾貨"],椰棗:["椰棗","乾貨"],海苔:["海苔","乾貨"],海帶芽:["海帶芽","乾貨"],醬油:["醬油","乾貨"],柴魚:["柴魚片","乾貨"],味噌:["味噌","乾貨"],
+  米吐司:["米吐司","米麵包"],米貝果:["糙米貝果","米麵包"],米披薩:["瑪格麗特米披薩","米麵包"],
+  米水餃:["純米水餃","冷凍"],藍莓:["野生藍莓","冷凍"],莓果:["綜合莓果","冷凍"],芒果:["芒果","冷凍"],毛豆:["毛豆","冷凍"],鮭魚:["鮭魚","冷凍"],吻仔魚:["吻仔魚","冷凍"],鮭魚鬆:["鮭魚鬆","冷凍"],
+  豆腐:["豆腐","冷藏"],豆花:["無糖豆花","冷藏"],優格:["無糖希臘優格","冷藏"],
+  香蕉:["香蕉","蔬果"],蘋果:["蘋果","蔬果"],奇異果:["奇異果","蔬果"],芭樂:["芭樂","蔬果"],菠菜:["菠菜","蔬果"],酪梨:["酪梨","蔬果"],番茄:["番茄","蔬果"],小黃瓜:["小黃瓜","蔬果"],地瓜:["地瓜","蔬果"],高麗菜:["高麗菜","蔬果"],南瓜:["南瓜","蔬果"],馬鈴薯:["馬鈴薯","蔬果"],菜脯:["菜脯","蔬果"],水果:["當季水果","蔬果"],蔬菜:["當季蔬菜","蔬果"],青菜:["綠色蔬菜","蔬果"],
+  糙米飯:["有機香米","乾貨"],糙米:["有機香米","乾貨"],米:["有機香米","乾貨"],飯糰:null,粥:null
+};
+const DRINKCAT={椰子水:["椰子水","飲品"],豆漿:["無糖豆漿","冷藏"],牛奶:["牛奶","冷藏"]};
+const CATORDER=["冷凍","冷藏","蔬果","米麵包","乾貨","飲品","其他"];
+
+const INGKB={
+ "燕麥":{c:2.5,f:.5,p:1,k:120,grain:"燕麥",starch:"燕麥",vit:["B群"],min:["鎂","鐵","鋅"]},
+ "藍莓":{c:1,k:40,vit:["C"],min:["鉀"]},"莓果":{c:1,k:40,vit:["C"],min:["鉀"]},"草莓":{c:.8,k:35,vit:["C"]},
+ "香蕉":{c:1.5,k:90,vit:["C","B6"],min:["鉀"]},"蘋果":{c:1,k:80,vit:["C"],min:["鉀"]},"奇異果":{c:.8,k:50,vit:["C"],min:["鉀"]},
+ "芒果":{c:1.2,k:90,vit:["A","C"]},"芭樂":{c:.8,k:60,vit:["C"]},"水果":{c:1,k:60,vit:["C"],min:["鉀"]},
+ "核桃":{f:2,p:.5,k:130,o3:true,al:["堅果"],vit:["E"],min:["鎂"]},"堅果醬":{f:2,p:1,k:100,al:["堅果"],vit:["E"],min:["鎂"]},"堅果":{f:2,p:1,k:110,al:["堅果"],vit:["E"],min:["鎂"]},
+ "亞麻":{f:1,k:40,o3:true,min:["鎂"]},"奇亞籽":{f:1,p:.5,k:60,o3:true,min:["鈣","鎂"]},"南瓜籽":{f:1.5,p:1,k:90,vit:["E"],min:["鎂","鋅"]},"葵花籽":{f:1.5,p:1,k:90,vit:["E"],min:["鎂"]},
+ "優格":{p:2,f:1,c:.5,k:100,al:["奶"],vit:["B12","B2"],min:["鈣"]},"牛奶":{p:1,f:1,c:1,k:80,al:["奶"],vit:["B12"],min:["鈣"]},"起司":{p:1.5,f:2,k:110,al:["奶"],min:["鈣"]},
+ "豆漿":{p:1.5,k:70,al:["大豆"],vit:["B群"],min:["鈣"]},"豆腐":{p:2,f:1,k:90,al:["大豆"],vit:["B群"],min:["鈣","鐵"]},"豆花":{p:1.5,k:70,al:["大豆"],min:["鈣"]},"毛豆":{p:2,c:1,k:100,al:["大豆"],vit:["K"],min:["鐵"]},"味噌":{p:.5,k:30,al:["大豆"],min:["鈉"]},"醬油":{k:5,al:["大豆"]},
+ "鷹嘴豆":{p:2,c:2,k:120,vit:["葉酸","B群"],min:["鐵","鎂"]},
+ "米吐司":{c:2.5,k:150,grain:"米",starch:"米",vit:["B群"]},"米貝果":{c:2.5,k:160,grain:"米",starch:"米"},"米披薩":{c:2.5,k:170,grain:"米",starch:"米"},"米":{c:2.5,k:150,grain:"米",starch:"米",vit:["B群"],min:["鎂"]},"飯":{c:2.5,k:150,grain:"米",starch:"米",vit:["B群"]},"粥":{c:2,k:120,grain:"米",starch:"米"},
+ "麵包":{c:2.5,k:150,grain:"小麥",starch:"小麥",al:["麩質"]},"吐司":{c:2.5,k:150,grain:"小麥",starch:"小麥",al:["麩質"]},"麵":{c:2.5,k:150,grain:"小麥",starch:"小麥",al:["麩質"]},
+ "地瓜":{c:2,k:110,starch:"地瓜",vit:["A","C"],min:["鉀"]},"南瓜":{c:1,k:50,starch:"南瓜",vit:["A","C"],min:["鉀"]},"馬鈴薯":{c:2,k:90,starch:"馬鈴薯",vit:["C","B6"],min:["鉀"]},"玉米":{c:1.5,k:90,starch:"玉米",vit:["B群"]},
+ "菠菜":{k:15,vit:["A","C","K","葉酸"],min:["鐵"]},"小黃瓜":{k:10,vit:["K"],min:["鉀"]},"高麗菜":{k:20,vit:["C","K"]},"番茄":{c:.3,k:20,vit:["C","A"],min:["鉀"]},"青菜":{k:20,vit:["A","C","K"]},"蔬菜":{k:20,vit:["A","C","K"]},"菜脯":{k:15,min:["鈉"]},
+ "鮭魚":{p:2.5,f:1.5,k:160,o3:true,meat:"魚",al:["魚"],vit:["D","B12"],min:["硒","碘"]},"吻仔魚":{p:2,k:60,o3:true,meat:"魚",al:["魚"],vit:["D","B12"],min:["鈣","碘"]},"鮪魚":{p:2.5,k:130,o3:true,meat:"魚",al:["魚"],vit:["D","B12"],min:["硒"]},"魚":{p:2,k:120,o3:true,meat:"魚",al:["魚"],vit:["D","B12"],min:["碘"]},"柴魚":{p:1,k:20,meat:"魚",al:["魚"],min:["碘"]},
+ "海苔":{k:10,vit:["A"],min:["碘","鐵"]},"海帶芽":{k:10,min:["碘","鈣"]},
+ "雞肉":{p:2.5,f:.5,k:120,meat:"雞",vit:["B群"],min:["鐵"]},"雞":{p:2.5,f:.5,k:120,meat:"雞",vit:["B群"],min:["鐵"]},"豬":{p:2.5,f:2,k:150,meat:"豬",vit:["B1"],min:["鐵","鋅"]},"牛肉":{p:2.5,f:2,k:150,meat:"牛",vit:["B12"],min:["鐵","鋅"]},
+ "蛋":{p:2,f:1.5,k:80,al:["蛋"],vit:["A","D","B12"],min:["鐵","硒"]},
+ "可可":{k:20,caf:true,min:["鎂","鐵"]},"巧克力":{f:1,k:60,caf:true,al:["奶"],min:["鎂"]},
+ "椰棗":{c:2,k:110,min:["鉀","鎂"]},"椰子水":{c:.5,k:45,min:["鉀"]},"酪梨":{f:2.5,k:160,vit:["E","K","C"],min:["鉀"]},"肉桂":{k:5},"蜂蜜":{c:1,k:60}
+};
+function analyzeIng(tokens){
+  let carb=0,fat=0,prot=0,kcal=0; const al=new Set(),vit=new Set(),min=new Set(),grain=new Set(),starch=new Set(),meat=new Set(),src=[]; let o3=false,caf=false; const unknown=[];
+  tokens.forEach(tok=>{
+    let hit=null;
+    for(const key in INGKB){ if(tok.indexOf(key)>=0 || key.indexOf(tok)>=0){ hit=INGKB[key]; break; } }
+    if(!hit){ unknown.push(tok); return; }
+    carb+=hit.c||0; fat+=hit.f||0; prot+=hit.p||0; kcal+=hit.k||0;
+    (hit.al||[]).forEach(x=>al.add(x)); (hit.vit||[]).forEach(x=>vit.add(x)); (hit.min||[]).forEach(x=>min.add(x));
+    if(hit.o3) o3=true; if(hit.caf) caf=true;
+    if(hit.meat) meat.add(hit.meat); if(hit.grain) grain.add(hit.grain); if(hit.starch) starch.add(hit.starch);
+    if((hit.p||0)>=1) src.push(tok);
+  });
+  const lv=(x,hi,mid)=> x>=hi?"高":(x>=mid?"中":"低");
+  return {
+    carb:lv(carb,4,2), fat:lv(fat,3,1.5), prot:lv(prot,4,2),
+    starch:[...starch].join("、")||"無", grain:[...grain].join("、")||"無", meat:[...meat].join("、")||"無",
+    vit:[...vit].slice(0,5).join("、")||"—", min:[...min].slice(0,5).join("、")||"—",
+    kcal:"約"+(Math.round(kcal/10)*10), o3:o3, caf:caf,
+    proteinSource:src.slice(0,3).join("＋")||"—", unknown:unknown, allergens:[...al].filter(x=>ALLERGENS.includes(x))
+  };
+}
+
+const KEY="breakfastDraw_v4";
+let state={name:"",age:"",health:"",avoid:[],avoidCustom:[],have:[...EQUIP],avoidCaffeine:true,zhuyinCards:false,quickOnly:false,vegType:"無",avoidMeats:[],view:"week",page:"plan",schedule:[],drawId:null,drawMeal:"早餐",recipes:null,mgMeal:"全部",mgTastes:[],mgAvoid:[],mgEquip:[],mgSearch:"",rowFields:["kcal","prot"]};
+function save(){ try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){} }
+function load(){ try{const s=localStorage.getItem(KEY); if(s){const p=JSON.parse(s); if(p&&typeof p==="object") state=Object.assign(state,p);}}catch(e){} }
+function deep(o){ return JSON.parse(JSON.stringify(o)); }
+function recipes(){ return state.recipes; }
+function byId(id){ return state.recipes.find(r=>r.id===id); }
+function rnd(n){ return Math.floor(Math.random()*n); }
+function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+/* zhuyin (bopomofo) generation — local, no network at runtime beyond the loaded lib */
+const ZINI=['zh','ch','sh','b','p','m','f','d','t','n','l','g','k','h','j','q','x','r','z','c','s'];
+const ZIM={b:'ㄅ',p:'ㄆ',m:'ㄇ',f:'ㄈ',d:'ㄉ',t:'ㄊ',n:'ㄋ',l:'ㄌ',g:'ㄍ',k:'ㄎ',h:'ㄏ',j:'ㄐ',q:'ㄑ',x:'ㄒ',zh:'ㄓ',ch:'ㄔ',sh:'ㄕ',r:'ㄖ',z:'ㄗ',c:'ㄘ',s:'ㄙ'};
+const ZFM={'a':'ㄚ','o':'ㄛ','e':'ㄜ','ê':'ㄝ','ai':'ㄞ','ei':'ㄟ','ao':'ㄠ','ou':'ㄡ','an':'ㄢ','en':'ㄣ','ang':'ㄤ','eng':'ㄥ','er':'ㄦ','ong':'ㄨㄥ','i':'ㄧ','ia':'ㄧㄚ','ie':'ㄧㄝ','iao':'ㄧㄠ','iu':'ㄧㄡ','iou':'ㄧㄡ','ian':'ㄧㄢ','in':'ㄧㄣ','iang':'ㄧㄤ','ing':'ㄧㄥ','iong':'ㄩㄥ','u':'ㄨ','ua':'ㄨㄚ','uo':'ㄨㄛ','uai':'ㄨㄞ','ui':'ㄨㄟ','uei':'ㄨㄟ','uan':'ㄨㄢ','un':'ㄨㄣ','uen':'ㄨㄣ','uang':'ㄨㄤ','ueng':'ㄨㄥ','v':'ㄩ','ve':'ㄩㄝ','van':'ㄩㄢ','vn':'ㄩㄣ'};
+const ZTONE={'2':'ˊ','3':'ˇ','4':'ˋ','0':'˙','5':'˙'};
+function syl2zh(s){
+  const m=String(s).match(/^([a-züê]+)([0-5])$/i); if(!m) return null;
+  let base=m[1].toLowerCase(), tone=m[2], ini='';
+  for(const c of ZINI){ if(base.startsWith(c)){ ini=c; break; } }
+  let rest=base.slice(ini.length);
+  if(['zh','ch','sh','r','z','c','s'].includes(ini) && rest==='i') rest='';
+  if(ini===''){
+    if(base.startsWith('yu')) rest='v'+base.slice(2);
+    else if(base.startsWith('yi')) rest=base.slice(1);
+    else if(base[0]==='y') rest='i'+base.slice(1);
+    else if(base==='wu') rest='u';
+    else if(base.startsWith('wu')) rest='u'+base.slice(2);
+    else if(base[0]==='w') rest='u'+base.slice(1);
+  }
+  if(['j','q','x'].includes(ini) && rest[0]==='u') rest='v'+rest.slice(1);
+  const fz = rest===''? '' : (ZFM[rest]!==undefined?ZFM[rest]:null);
+  if(fz===null) return null;
+  return (ZIM[ini]||'')+fz+(ZTONE[tone]||'');
+}
+const ZCACHE={};
+function zhuyinUnits(text){
+  if(!(window.pinyinPro&&window.pinyinPro.pinyin)) return null;
+  if(ZCACHE[text]!==undefined) return ZCACHE[text];
+  let out=null;
+  try{
+    const arr=window.pinyinPro.pinyin(text,{type:'array',toneType:'num',v:true});
+    const chars=[...text];
+    if(Array.isArray(arr) && arr.length===chars.length){
+      out=chars.map((ch,i)=>{
+        const zz=(typeof arr[i]==='string')?syl2zh(arr[i]):null;
+        if(!zz) return `<span class="zsep">${esc(ch)}</span>`;
+        const marks="ˊˇˋ˙"; let tone="",base=zz;
+        for(const mk of zz){ if(marks.indexOf(mk)>=0){ tone=mk; base=zz.replace(mk,""); } }
+        const tn=tone?`<span class="ztn${tone==='˙'?' neutral':''}">${tone}</span>`:'';
+        return `<span class="zu"><span class="zhz">${esc(ch)}</span><span class="zbp"><span class="zsym">${esc(base)}</span>${tn}</span></span>`;
+      }).join("");
+    }
+  }catch(e){ out=null; }
+  ZCACHE[text]=out; return out;
+}
+function dishHTML(r,withZhuyin){
+  if(withZhuyin){ const u=zhuyinUnits(r.dish); if(u) return `<div class="zdish">${u}</div>`; }
+  return esc(r.dish);
+}
+
+function isVeg(r){ return ((r.nutri&&r.nutri.meat)||"無")==="無"; }
+const VEGDESC={
+  "無":"",
+  "全素":"不含肉、魚、蛋、奶，也不含蔥蒜等五辛。",
+  "蛋素":"全素再加上蛋；不含肉、魚、奶、五辛。",
+  "奶素":"全素再加上奶；不含肉、魚、蛋、五辛。",
+  "奶蛋素":"全素再加上奶與蛋；不含肉、魚、五辛。",
+  "植物五辛素":"植物性食物，可含蔥蒜等五辛，也可含奶蛋；不含肉、魚。",
+  "鍋邊素":"以素為主；此處顯示不以肉為主的餐點。",
+  "海鮮素":"以植物為主，可吃魚與海鮮，不吃其他肉類。",
+  "Vegan":"不含任何動物性食材：肉、魚、蛋、奶、蜂蜜。"
+};
+function vegFlags(r){
+  const a=r.a||[]; const meat=(r.nutri&&r.nutri.meat)||""; const ing=(r.ing||[]).join("");
+  return { egg:a.includes("蛋"), dairy:a.includes("奶"), fish:(meat.indexOf("魚")>=0||a.includes("魚")), sea:meat.indexOf("海鮮")>=0, land:/雞|牛|豬/.test(meat), honey:ing.indexOf("蜂蜜")>=0, wuxin:/蔥|蒜|韭|薤|洋蔥|興渠/.test(ing) };
+}
+function vegAllows(r){
+  const t=state.vegType; if(!t||t==="無") return true;
+  const f=vegFlags(r);
+  if(f.land) return false;
+  if((f.fish||f.sea) && t!=="海鮮素") return false;
+  if(f.egg && !["蛋素","奶蛋素","植物五辛素","鍋邊素","海鮮素"].includes(t)) return false;
+  if(f.dairy && !["奶素","奶蛋素","植物五辛素","鍋邊素","海鮮素"].includes(t)) return false;
+  if(f.wuxin && t==="全素") return false;
+  if(f.honey && (t==="Vegan"||t==="全素")) return false;
+  return true;
+}
+function haystack(r){ return r.type+" "+r.dish+" "+r.extra+" "+r.protein+" "+r.drink+" "+(r.ing||[]).join(" "); }
+function filteredPool(){
+  return state.recipes.filter(r=>{
+    for(const al of (r.a||[])){ if(state.avoid.includes(al)) return false; }
+    const hay=haystack(r);
+    for(const t of state.avoidCustom){ if(t && hay.indexOf(t)>=0) return false; }
+    if((r.equip||[]).length>0 && !r.equip.some(e=>state.have.includes(e))) return false;
+    if(state.avoidCaffeine && r.caffeine) return false;
+    if(state.quickOnly && !r.quick) return false;
+    if(!vegAllows(r)) return false;
+    if(state.avoidMeats.length){ const mt=(r.nutri&&r.nutri.meat)||""; if(state.avoidMeats.some(x=>mt.indexOf(x)>=0)) return false; }
+    return true;
+  });
+}
+function drinkFor(r){
+  let d=r.drink;
+  if(d==="牛奶"&&state.avoid.includes("奶")) d="椰子水";
+  if(d==="豆漿"&&state.avoid.includes("大豆")) d="椰子水";
+  if(d==="椰子水"&&(state.avoidCustom.includes("椰子水")||state.avoidCustom.includes("椰子"))) d="水";
+  return d;
+}
+function pickNext(pool,recent,lastTaste){
+  let c=pool.filter(r=>!recent.slice(-2).includes(r.id)); if(!c.length) c=pool.slice();
+  const alt=c.filter(r=>r.taste!==lastTaste); const use=alt.length?alt:c; return use[rnd(use.length)];
+}
+function generate(n){ const p=filteredPool(); if(!p.length){state.schedule=[];return;} let o=[],rec=[],lt=null; for(let i=0;i<n;i++){const r=pickNext(p,rec,lt);o.push(r.id);rec.push(r.id);lt=r.taste;} state.schedule=o; }
+function ensureLength(n){ const p=filteredPool(); if(!p.length){state.schedule=[];return;} const v=new Set(p.map(r=>r.id)); state.schedule=state.schedule.filter(id=>v.has(id)); if(state.schedule.length>=n){state.schedule=state.schedule.slice(0,n);return;} let rec=state.schedule.slice(-2),lt=state.schedule.length?byId(state.schedule[state.schedule.length-1]).taste:null; while(state.schedule.length<n){const r=pickNext(p,rec,lt);state.schedule.push(r.id);rec.push(r.id);lt=r.taste;} }
+function currentN(){ return state.view==="month"?30:7; }
+
+function chipRow(c,list,sel,cls,cb){ c.innerHTML=""; list.forEach(it=>{const b=document.createElement("button");b.type="button";b.className="chip-btn "+cls+(sel.includes(it)?" on":"");b.textContent=it;b.onclick=()=>cb(it);c.appendChild(b);}); }
+function renderCustomChips(){ const c=document.getElementById("customChips");c.innerHTML=""; state.avoidCustom.forEach(t=>{const b=document.createElement("button");b.type="button";b.className="chip-btn custom on";b.textContent=t+" ×";b.onclick=()=>{state.avoidCustom=state.avoidCustom.filter(x=>x!==t);save();renderCustomChips();refresh();};c.appendChild(b);}); }
+const MEATCHIPS=[["雞","雞肉"],["牛","牛肉"],["豬","豬肉"],["海鮮","海鮮"]];
+function renderAvoidChips(){
+  const c=document.getElementById("avoidChips"); c.innerHTML="";
+  ALLERGENS.forEach(a=>{
+    const b=document.createElement("button"); b.type="button";
+    b.className="chip-btn avoid"+(state.avoid.includes(a)?" on":""); b.textContent=a;
+    b.onclick=()=>{ state.avoid.includes(a)? state.avoid=state.avoid.filter(x=>x!==a): state.avoid.push(a); save(); renderAvoidChips(); refresh(); };
+    c.appendChild(b);
+  });
+  const cf=document.createElement("button"); cf.type="button";
+  cf.className="chip-btn avoid"+(state.avoidCaffeine?" on":""); cf.textContent="咖啡因";
+  cf.onclick=()=>{ state.avoidCaffeine=!state.avoidCaffeine; save(); renderAvoidChips(); refresh(); };
+  c.appendChild(cf);
+  MEATCHIPS.forEach(m=>{
+    const b=document.createElement("button"); b.type="button";
+    b.className="chip-btn avoid"+(state.avoidMeats.includes(m[0])?" on":""); b.textContent=m[1];
+    b.onclick=()=>{ const k=m[0]; state.avoidMeats.includes(k)? state.avoidMeats=state.avoidMeats.filter(x=>x!==k): state.avoidMeats.push(k); save(); renderAvoidChips(); refresh(); };
+    c.appendChild(b);
+  });
+}
+function renderChips(){
+  renderAvoidChips();
+  chipRow(document.getElementById("equipChips"),EQUIP,state.have,"have",it=>{state.have.includes(it)?state.have=state.have.filter(x=>x!==it):state.have.push(it);save();renderChips();refresh();});
+  renderCustomChips();
+}
+function addCustom(){ const inp=document.getElementById("customIn"); const v=(inp.value||"").trim(); if(v&&!state.avoidCustom.includes(v)) state.avoidCustom.push(v); inp.value=""; save(); renderCustomChips(); refresh(); }
+
+function nutriLine(r){ const nu=r.nutri||{}; let s="熱量 "+(nu.kcal||"—")+"｜蛋白質 "+(nu.prot||"—")+"｜碳水 "+(nu.carb||"—")+"｜脂肪 "+(nu.fat||"—"); if(r.o3) s+="｜Omega-3"; if(r.caffeine) s+="｜含咖啡因"; return s; }
+function cardHTML(id,idx){
+  const r=byId(id); if(!r) return "";
+  const o3=r.o3?'<span class="cchip o3">Omega-3</span>':'';
+  const slow=((r.meal||'早餐')==='早餐'&&!r.quick)?'<span class="cchip slow">需 5 分以上</span>':'';
+  const pool=filteredPool();
+  const opts=pool.map(p=>`<option value="${p.id}"${p.id===id?" selected":""}>${esc(p.dish)}</option>`).join("");
+  return `<article class="day t-${r.taste}">
+    <div class="day-top"><span class="num">${idx+1}</span><span class="type">${esc(r.type)}</span></div>
+    <h3 class="dish">${dishHTML(r,state.zhuyinCards)}</h3><p class="extra">${esc(r.extra)}</p>
+    <div class="cchips"><span class="cchip">蛋白質 · ${esc(r.protein)}</span>${o3}${slow}</div>
+    <div class="nutri">${esc(nutriLine(r))}</div>
+    <div class="foot"><span class="prep">${esc(r.prep)}</span><span class="drink">飲品 · ${esc(drinkFor(r))}</span></div>
+    <div class="cardactions">
+      <button class="mini" data-act="recipe" data-id="${r.id}">食譜</button>
+      <button class="mini" data-act="swap" data-idx="${idx}">換一道</button>
+      <button class="mini" data-act="choose" data-idx="${idx}">指定</button>
+    </div>
+    <select class="picker" data-idx="${idx}">${opts}</select>
+  </article>`;
+}
+function bigCardHTML(id){
+  const r=byId(id); if(!r) return `<div class="placeholder">按下面的按鈕，抽今天的早餐。</div>`;
+  const o3=r.o3?'<span class="cchip o3">Omega-3</span>':'';
+  const slow=((r.meal||'早餐')==='早餐'&&!r.quick)?'<span class="cchip slow">需 5 分以上</span>':'';
+  return `<article class="day big t-${r.taste} reveal">
+    <div class="day-top"><span class="type">${esc(r.type)}</span><span class="type">${r.taste==="sweet"?"甜口":"鹹口"}</span></div>
+    <h3 class="dish">${dishHTML(r,true)}</h3><p class="extra">${esc(r.extra)}</p>
+    <div class="cchips"><span class="cchip">蛋白質 · ${esc(r.protein)}</span>${o3}${slow}</div>
+    <div class="nutri">${esc(nutriLine(r))}</div>
+    <div class="foot"><span class="prep">${esc(r.prep)}</span><span class="drink">飲品 · ${esc(drinkFor(r))}</span></div>
+  </article>`;
+}
+
+function renderMenu(){
+  const menu=document.getElementById("menu"),meta=document.getElementById("menuMeta"),pool=filteredPool();
+  menu.classList.toggle("zh-on", !!state.zhuyinCards);
+  if(!pool.length){ menu.innerHTML=`<div class="card empty">目前條件下沒有可用餐點。<br>請放寬一點（少勾一個過敏原、移除一個自訂食材，或多勾一項設備）。</div>`; meta.textContent=""; return; }
+  if(!state.schedule.length) generate(currentN());
+  ensureLength(currentN());
+  meta.textContent=((state.name||"孩子")+(state.age?("・"+state.age):""))+"｜可用菜色 "+pool.length+" 道";
+  const n=state.schedule.length; let html="";
+  for(let w=0;w<n;w+=7){ const end=Math.min(w+7,n); const label=(n>7)?("第 "+(Math.floor(w/7)+1)+" 週"):"這一週"; let cards=""; for(let i=w;i<end;i++) cards+=cardHTML(state.schedule[i],i); html+=`<div class="week-title">${label}</div><div class="grid">${cards}</div>`; }
+  menu.innerHTML=html;
+  menu.querySelectorAll('[data-act="recipe"]').forEach(b=>b.onclick=()=>openRecipe(b.dataset.id));
+  menu.querySelectorAll('[data-act="swap"]').forEach(b=>b.onclick=()=>swapDay(+b.dataset.idx));
+  menu.querySelectorAll('[data-act="choose"]').forEach(b=>b.onclick=()=>{const s=menu.querySelector('select.picker[data-idx="'+b.dataset.idx+'"]'); if(s) s.classList.toggle("show");});
+  menu.querySelectorAll('select.picker').forEach(sel=>sel.onchange=()=>{state.schedule[+sel.dataset.idx]=sel.value;save();renderMenu();});
+}
+function swapDay(i){ const p=filteredPool(); if(p.length<2) return; const cur=state.schedule[i],pr=state.schedule[i-1],nx=state.schedule[i+1]; let c=p.filter(r=>r.id!==cur&&r.id!==pr&&r.id!==nx); if(!c.length) c=p.filter(r=>r.id!==cur); state.schedule[i]=c[rnd(c.length)].id; save(); renderMenu(); }
+function drawPool(){ return filteredPool().filter(r=>(r.meal||"早餐")===state.drawMeal); }
+function renderDrawMeals(){
+  const el=document.getElementById("drawMeals");
+  el.innerHTML=["早餐","午餐","晚餐"].map(m=>`<button class="dmeal${state.drawMeal===m?' on':''}" data-dm="${m}">${m}</button>`).join("");
+  el.querySelectorAll('[data-dm]').forEach(b=>b.onclick=()=>{ state.drawMeal=b.dataset.dm; state.drawId=null; save(); renderDraw(); });
+}
+function renderDraw(){
+  const meta=document.getElementById("menuMeta"),pool=drawPool(),dc=document.getElementById("drawCard"),rb=document.getElementById("drawRecipeBtn");
+  renderDrawMeals();
+  document.getElementById("drawHint").textContent="讓小朋友按一下，看看今天"+state.drawMeal+"吃什麼。";
+  document.getElementById("drawBtn").textContent="抽一張"+state.drawMeal;
+  if(!pool.length){ dc.innerHTML=`<div class="placeholder">這個餐別目前沒有可用餐點。<br>可到「菜色管理」新增${state.drawMeal}，或放寬篩選。</div>`; meta.textContent=""; rb.style.display="none"; return; }
+  meta.textContent=((state.name||"孩子")+(state.age?("・"+state.age):""))+"｜"+state.drawMeal+" "+pool.length+" 道";
+  if(state.drawId&&!pool.some(r=>r.id===state.drawId)) state.drawId=null;
+  dc.innerHTML=bigCardHTML(state.drawId);
+  rb.style.display=state.drawId?"inline-block":"none";
+}
+function backCardHTML(){ return `<article class="day big cardback"><div class="backmark">?</div></article>`; }
+function todayStr(){ const d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); }
+function revealDraw(id){ state.drawId=id; state.drawDate=todayStr(); save(); document.getElementById("drawCard").innerHTML=bigCardHTML(id); document.getElementById("drawRecipeBtn").style.display="inline-block"; }
+function drawOne(){
+  const p=drawPool(); if(!p.length){renderDraw();return;}
+  let c=p.filter(r=>r.id!==state.drawId); if(!c.length) c=p;
+  const chosen=c[rnd(c.length)].id;
+  const dc=document.getElementById("drawCard");
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(reduce){ revealDraw(chosen); return; }
+  dc.innerHTML=backCardHTML();
+  const el=dc.firstElementChild;
+  if(!el){ revealDraw(chosen); return; }
+  el.classList.add("spinning");
+  let done=false; const finish=()=>{ if(done) return; done=true; revealDraw(chosen); };
+  el.addEventListener("animationend", finish, {once:true});
+  setTimeout(finish, 850);
+}
+
+/* modal */
+const overlay=document.getElementById("overlay"),modalBody=document.getElementById("modalBody");
+function openModal(html){ modalBody.innerHTML=html; overlay.classList.add("show"); }
+function closeModal(){ overlay.classList.remove("show"); }
+document.getElementById("closeModal").onclick=closeModal;
+overlay.onclick=e=>{ if(e.target===overlay) closeModal(); };
+function recipeInfoHTML(r){
+  const nu=r.nutri||{};
+  const ing=(r.ing||[]).map(esc).join("、");
+  const steps=(r.steps||[]).map(s=>`<li>${esc(s)}</li>`).join("");
+  return `<h3 class="mtitle">${esc(r.dish)}</h3>
+    <div class="mmeta">${esc(r.meal||"早餐")} · ${r.taste==="sweet"?"甜口":"鹹口"} · ${esc(r.type)} · ${esc(r.prep)}</div>
+    <div class="mmeta">蛋白質來源：${esc(r.protein)}　飲品：${esc(drinkFor(r))}</div>
+    <div class="mmeta">熱量 ${esc(nu.kcal||"—")}｜碳水 ${esc(nu.carb||"—")}（澱粉：${esc(nu.starch||"—")}）｜脂肪 ${esc(nu.fat||"—")}｜蛋白質 ${esc(nu.prot||"—")}</div>
+    <div class="mmeta">肉類 ${esc(nu.meat||"—")}｜五穀 ${esc(nu.grain||"—")}｜Omega-3 ${r.o3?"有":"無"}｜咖啡因 ${r.caffeine?"有":"無"}</div>
+    <div class="mmeta">維生素 ${esc(nu.vit||"—")}｜礦物質 ${esc(nu.min||"—")}</div>
+    <div class="msec">食材</div><div class="ing-line">${ing}</div>
+    <div class="msec">做法</div><ol class="ol">${steps}</ol>`;
+}
+function openRecipe(id){ const r=byId(id); if(!r) return; openModal(recipeInfoHTML(r)); }
+function openManageDetail(id){
+  const r=byId(id); if(!r) return;
+  openModal(recipeInfoHTML(r)+`<div class="mactions" style="margin-top:16px"><button class="rowbtn" id="mEdit">編輯</button><button class="rowbtn del" id="mDel">刪除</button></div>`);
+  document.getElementById("mEdit").onclick=()=>openForm(r.id);
+  document.getElementById("mDel").onclick=()=>{ if(confirm("確定刪除這道菜色？")){ state.recipes=state.recipes.filter(x=>x.id!==r.id); state.schedule=state.schedule.filter(x=>x!==r.id); if(state.drawId===r.id) state.drawId=null; save(); closeModal(); renderManage(); } };
+}
+document.getElementById("drawRecipeBtn").onclick=()=>{ if(state.drawId) openRecipe(state.drawId); };
+
+/* shopping */
+function openShopping(){
+  ensureLength(currentN());
+  const src=state.schedule;
+  if(!src.length){ openModal(`<h3 class="mtitle">採買清單</h3><p>目前沒有菜單，請先產生一份。</p>`); return; }
+  const map=new Map();
+  src.forEach(id=>{ const r=byId(id); if(!r) return; (r.ing||[]).forEach(t=>{const m=CAT[t]; if(m&&m[0]) map.set(m[0],m[1]);}); const dm=DRINKCAT[drinkFor(r)]; if(dm) map.set(dm[0],dm[1]); });
+  const byCat={}; map.forEach((cat,name)=>{ (byCat[cat]=byCat[cat]||[]).push(name); });
+  let html=`<h3 class="mtitle">採買清單</h3><div class="mmeta">${state.view==="month"?"一個月":"一週"}份・${map.size} 項</div>`; let text="";
+  CATORDER.forEach(cat=>{ if(!byCat[cat]) return; html+=`<div class="shopcat">${cat}</div>`; text+="【"+cat+"】\n"; byCat[cat].sort().forEach(n=>{ html+=`<div class="shopitem">- ${esc(n)}</div>`; text+="- "+n+"\n"; }); text+="\n"; });
+  html+=`<div style="margin-top:16px"><button class="btn primary" id="copyShop">複製清單</button></div>`;
+  openModal(html);
+  const cb=document.getElementById("copyShop");
+  cb.onclick=()=>{ try{ navigator.clipboard.writeText(text).then(()=>{cb.textContent="已複製";},()=>{cb.textContent="請長按選取複製";}); }catch(e){ cb.textContent="請長按選取複製"; } };
+}
+document.getElementById("shopBtn").onclick=openShopping;
+
+/* manage: search + meal tiles + filters + list */
+const MEALS=["全部","早餐","午餐","晚餐"];
+const FIELDS=[
+  {k:"kcal",label:"熱量",get:r=>(r.nutri||{}).kcal},
+  {k:"prot",label:"蛋白質",get:r=>(r.nutri||{}).prot},
+  {k:"carb",label:"碳水",get:r=>(r.nutri||{}).carb},
+  {k:"fat",label:"脂肪",get:r=>(r.nutri||{}).fat},
+  {k:"starch",label:"澱粉",get:r=>(r.nutri||{}).starch},
+  {k:"protein",label:"蛋白質來源",get:r=>r.protein},
+  {k:"grain",label:"五穀",get:r=>(r.nutri||{}).grain},
+  {k:"o3",label:"Omega-3",get:r=>r.o3?"有":"無"},
+  {k:"caffeine",label:"咖啡因",get:r=>r.caffeine?"有":"無"},
+  {k:"meat",label:"肉類",get:r=>(r.nutri||{}).meat}
+];
+function manageFiltered(){
+  const q=(state.mgSearch||"").trim();
+  return state.recipes.filter(r=>{
+    if(state.mgMeal!=="全部" && (r.meal||"早餐")!==state.mgMeal) return false;
+    if(state.mgTastes.length && !state.mgTastes.includes(r.taste)) return false;
+    if(state.mgAvoid.length && (r.a||[]).some(a=>state.mgAvoid.includes(a))) return false;
+    if(state.mgEquip.length){ const ok=(r.equip||[]).length===0 || r.equip.some(e=>state.mgEquip.includes(e)); if(!ok) return false; }
+    if(q && haystack(r).indexOf(q)<0 && r.dish.indexOf(q)<0) return false;
+    return true;
+  });
+}
+function renderMealTiles(){
+  const el=document.getElementById("mealTiles");
+  el.innerHTML=MEALS.map(m=>{ const c = m==="全部"? state.recipes.length : state.recipes.filter(r=>(r.meal||"早餐")===m).length; return `<button class="mtile${state.mgMeal===m?' on':''}" data-meal="${m}"><b>${m}</b><small>${c} 道</small></button>`; }).join("");
+  el.querySelectorAll('[data-meal]').forEach(b=>b.onclick=()=>{state.mgMeal=b.dataset.meal;save();renderManage();});
+}
+function renderFilterPanels(){
+  const dt=document.getElementById("ddTaste"), da=document.getElementById("ddAllergy"), de=document.getElementById("ddEquip"), df=document.getElementById("ddFields");
+  const TASTES=[["sweet","甜"],["savory","鹹"]];
+  dt.innerHTML=TASTES.map(t=>`<label><input type="checkbox" data-ts="${t[0]}"${state.mgTastes.includes(t[0])?" checked":""}> ${t[1]}</label>`).join("");
+  da.innerHTML=ALLERGENS.map(a=>`<label><input type="checkbox" data-al="${a}"${state.mgAvoid.includes(a)?" checked":""}> 無${a}</label>`).join("");
+  de.innerHTML=EQUIP.map(e=>`<label><input type="checkbox" data-eq="${e}"${state.mgEquip.includes(e)?" checked":""}> ${e}</label>`).join("");
+  df.innerHTML=FIELDS.map(f=>`<label><input type="checkbox" data-fd="${f.k}"${state.rowFields.includes(f.k)?" checked":""}> ${f.label}</label>`).join("");
+  dt.querySelectorAll('[data-ts]').forEach(c=>c.onchange=()=>{ const t=c.dataset.ts; if(c.checked){ if(!state.mgTastes.includes(t)) state.mgTastes.push(t);} else state.mgTastes=state.mgTastes.filter(x=>x!==t); save(); renderList(); });
+  da.querySelectorAll('[data-al]').forEach(c=>c.onchange=()=>{ const a=c.dataset.al; if(c.checked){ if(!state.mgAvoid.includes(a)) state.mgAvoid.push(a);} else state.mgAvoid=state.mgAvoid.filter(x=>x!==a); save(); renderList(); });
+  de.querySelectorAll('[data-eq]').forEach(c=>c.onchange=()=>{ const e=c.dataset.eq; if(c.checked){ if(!state.mgEquip.includes(e)) state.mgEquip.push(e);} else state.mgEquip=state.mgEquip.filter(x=>x!==e); save(); renderList(); });
+  df.querySelectorAll('[data-fd]').forEach(c=>c.onchange=()=>{ const k=c.dataset.fd; if(c.checked){ if(!state.rowFields.includes(k)) state.rowFields.push(k);} else state.rowFields=state.rowFields.filter(x=>x!==k); save(); renderList(); });
+}
+function renderList(){
+  const list=document.getElementById("recipeList");
+  const rows=manageFiltered();
+  document.getElementById("mgMeta").textContent="顯示 "+rows.length+" / "+state.recipes.length+" 道";
+  if(!rows.length){ list.innerHTML=`<div class="mempty">沒有符合的菜色。<br>換個餐別、放寬篩選，或新增一道。</div>`; return; }
+  list.innerHTML=rows.map(r=>{
+    const stats=state.rowFields.map(k=>{const f=FIELDS.find(x=>x.k===k); if(!f) return ""; const v=f.get(r); return v?`<span class="rstat">${esc(f.label)} ${esc(v)}</span>`:"";}).join("");
+    return `<div class="rrow" data-id="${r.id}"><span class="rdot ${r.taste==='sweet'?'sweet':'savory'}"></span><div class="rmain"><div class="rname">${esc(r.dish)}</div><div class="rstats">${stats}</div></div><span class="rchev">›</span></div>`;
+  }).join("");
+  list.querySelectorAll('.rrow').forEach(row=>row.onclick=()=>openManageDetail(row.dataset.id));
+}
+function renderManage(){
+  renderMealTiles(); renderFilterPanels();
+  document.getElementById("mgSearch").value=state.mgSearch||"";
+  renderList();
+}
+function checkboxes(name,list,sel){ return list.map(it=>`<label style="display:inline-flex;align-items:center;gap:5px;margin:0 10px 6px 0;font-weight:700"><input type="checkbox" name="${name}" value="${esc(it)}"${sel.includes(it)?" checked":""}> ${esc(it)}</label>`).join(""); }
+function openForm(id){
+  const r=id?byId(id):null; const nu=(r&&r.nutri)||{};
+  const v=(x)=>esc(x||"");
+  openModal(`<h3 class="mtitle">${r?"編輯菜色":"新增菜色"}</h3>
+    <div class="formgrid">
+      <div class="field full"><label>名稱</label><input id="f_dish" value="${v(r&&r.dish)}"></div>
+      <div class="field"><label>分類（自由填，如：隔夜燕麥）</label><input id="f_type" value="${v(r&&r.type)}"></div>
+      <div class="field"><label>甜/鹹</label><select id="f_taste"><option value="sweet"${r&&r.taste==="sweet"?" selected":""}>甜口</option><option value="savory"${r&&r.taste==="savory"?" selected":""}>鹹口</option></select></div>
+      <div class="field"><label>餐別</label><select id="f_meal"><option value="早餐"${!r||r.meal==="早餐"||!r.meal?" selected":""}>早餐</option><option value="午餐"${r&&r.meal==="午餐"?" selected":""}>午餐</option><option value="晚餐"${r&&r.meal==="晚餐"?" selected":""}>晚餐</option></select></div>
+      <div class="field full"><label>內容說明</label><input id="f_extra" value="${v(r&&r.extra)}"></div>
+      <div class="field"><label>蛋白質來源</label><input id="f_protein" value="${v(r&&r.protein)}"></div>
+      <div class="field"><label>飲品</label><input id="f_drink" value="${v(r?r.drink:'椰子水')}"></div>
+      <div class="field"><label>準備時機</label><input id="f_prep" value="${v(r?r.prep:'早上')}"></div>
+      <div class="field"><label>熱量（估）</label><input id="f_kcal" value="${v(nu.kcal)}"></div>
+      <div class="field"><label>碳水</label><input id="f_carb" value="${v(nu.carb)}"></div>
+      <div class="field"><label>澱粉來源</label><input id="f_starch" value="${v(nu.starch)}"></div>
+      <div class="field"><label>脂肪</label><input id="f_fat" value="${v(nu.fat)}"></div>
+      <div class="field"><label>蛋白質（程度）</label><input id="f_prot" value="${v(nu.prot)}"></div>
+      <div class="field"><label>肉類</label><input id="f_meat" value="${v(nu.meat)}"></div>
+      <div class="field"><label>五穀</label><input id="f_grain" value="${v(nu.grain)}"></div>
+      <div class="field"><label>維生素</label><input id="f_vit" value="${v(nu.vit)}"></div>
+      <div class="field"><label>礦物質</label><input id="f_min" value="${v(nu.min)}"></div>
+      <div class="field full"><label>屬性</label><label style="font-weight:700;margin-right:16px"><input type="checkbox" id="f_quick"${!r||r.quick!==false?" checked":""}> 5 分鐘內可出餐</label><label style="font-weight:700;margin-right:16px"><input type="checkbox" id="f_o3"${r&&r.o3?" checked":""}> 含 Omega-3</label><label style="font-weight:700"><input type="checkbox" id="f_caf"${r&&r.caffeine?" checked":""}> 含咖啡因</label></div>
+      <div class="field full"><label>過敏原（含有才勾）</label><div>${checkboxes("f_a",ALLERGENS,(r&&r.a)||[])}</div></div>
+      <div class="field full"><label>需要設備（擇一即可；全不勾＝免設備）</label><div>${checkboxes("f_eq",EQUIP,(r&&r.equip)||[])}</div></div>
+      <div class="field full"><label>食材（用「、」或逗號分隔）</label><input id="f_ing" value="${v((r&&r.ing||[]).join('、'))}"></div>
+      <div class="field full"><button type="button" class="btn ghost" id="autoFill">依食材自動帶入營養與過敏原</button><div id="autoNote" style="margin-top:6px;font-size:.8rem;color:var(--muted);font-weight:700"></div></div>
+      <div class="field full"><label>做法（每行一步）</label><textarea id="f_steps">${esc((r&&r.steps||[]).join("\n"))}</textarea></div>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:9px"><button class="btn primary" id="saveRecipe">${r?"儲存":"新增"}</button><button class="btn ghost" id="cancelRecipe">取消</button></div>`);
+  document.getElementById("cancelRecipe").onclick=closeModal;
+  document.getElementById("autoFill").onclick=()=>{
+    const toks=document.getElementById("f_ing").value.split(/[、,，]/).map(s=>s.trim()).filter(Boolean);
+    const note=document.getElementById("autoNote");
+    if(!toks.length){ note.textContent="請先在上面填入食材，再自動帶入。"; return; }
+    const a=analyzeIng(toks);
+    const set=(id,val)=>{document.getElementById(id).value=val;};
+    set("f_carb",a.carb); set("f_starch",a.starch); set("f_fat",a.fat); set("f_prot",a.prot);
+    set("f_meat",a.meat); set("f_grain",a.grain); set("f_vit",a.vit); set("f_min",a.min); set("f_kcal",a.kcal);
+    if(!document.getElementById("f_protein").value.trim()) set("f_protein",a.proteinSource);
+    document.getElementById("f_o3").checked=a.o3; document.getElementById("f_caf").checked=a.caf;
+    document.querySelectorAll('input[name="f_a"]').forEach(c=>{ c.checked=a.allergens.includes(c.value); });
+    note.textContent="已依食材帶入粗估值，請再確認、可自行修改。"+(a.unknown.length?("（未辨識："+a.unknown.join("、")+"）"):"");
+  };
+  document.getElementById("saveRecipe").onclick=()=>{
+    const gv=x=>document.getElementById(x).value.trim();
+    const dish=gv("f_dish"); if(!dish){ alert("請填名稱"); return; }
+    const getChecked=name=>Array.from(document.querySelectorAll('input[name="'+name+'"]:checked')).map(c=>c.value);
+    const ingRaw=gv("f_ing").split(/[、,，]/).map(s=>s.trim()).filter(Boolean);
+    const stepsRaw=document.getElementById("f_steps").value.split("\n").map(s=>s.trim()).filter(Boolean);
+    const rec={
+      id: r?r.id:("cust_"+Date.now()),
+      type: gv("f_type")||"其他", taste: document.getElementById("f_taste").value, meal: document.getElementById("f_meal").value,
+      dish, extra: gv("f_extra"), protein: gv("f_protein")||"—", drink: gv("f_drink")||"椰子水", prep: gv("f_prep")||"早上",
+      o3: document.getElementById("f_o3").checked, caffeine: document.getElementById("f_caf").checked, quick: document.getElementById("f_quick").checked,
+      a: getChecked("f_a"), equip: getChecked("f_eq"), ing: ingRaw, steps: stepsRaw,
+      nutri:{ kcal:gv("f_kcal"), carb:gv("f_carb"), starch:gv("f_starch"), fat:gv("f_fat"), prot:gv("f_prot"), meat:gv("f_meat"), grain:gv("f_grain"), vit:gv("f_vit"), min:gv("f_min") }
+    };
+    if(r){ const i=state.recipes.findIndex(x=>x.id===r.id); state.recipes[i]=rec; } else { state.recipes.push(rec); }
+    save(); closeModal(); renderManage();
+  };
+}
+document.getElementById("addRecipeBtn").onclick=()=>openForm(null);
+document.getElementById("restoreBtn").onclick=()=>{ if(confirm("恢復預設會覆蓋你新增或修改過的菜色，確定嗎？")){ state.recipes=deep(DEFAULT_RECIPES); state.schedule=[]; state.drawId=null; save(); renderManage(); } };
+
+/* pages */
+function setPage(p){ state.page=p; save(); document.getElementById("planPage").style.display=p==="plan"?"block":"none"; document.getElementById("managePage").style.display=p==="manage"?"block":"none"; document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle("on",b.dataset.page===p)); if(p==="manage") renderManage(); else render(); }
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>setPage(b.dataset.page));
+
+function refresh(){ if(state.view!=="draw") ensureLength(currentN()); render(); }
+function render(){
+  const isDraw=state.view==="draw";
+  document.getElementById("legend").style.display=isDraw?"none":"flex";
+  document.getElementById("menu").style.display=isDraw?"none":"block";
+  document.getElementById("drawArea").classList.toggle("show",isDraw);
+  document.getElementById("menuHead").textContent=isDraw?"抽一張早餐":"早餐菜單";
+  document.querySelectorAll('#viewSeg button').forEach(x=>x.classList.toggle("on",x.dataset.view===state.view));
+  if(isDraw) renderDraw(); else renderMenu();
+}
+function initInputs(){
+  const n=document.getElementById("pname"),a=document.getElementById("age"),h=document.getElementById("health");
+  n.value=state.name;a.value=state.age;h.value=state.health;
+  n.oninput=()=>{state.name=n.value;save();render();};
+  a.oninput=()=>{state.age=a.value;save();render();};
+  h.oninput=()=>{state.health=h.value;save();};
+}
+document.getElementById("customAdd").onclick=addCustom;
+document.getElementById("customIn").addEventListener("keydown",e=>{ if(e.key==="Enter"){e.preventDefault();addCustom();} });
+document.getElementById("genBtn").onclick=()=>{ if(state.view==="draw") drawOne(); else {generate(currentN());save();renderMenu();} };
+document.getElementById("drawBtn").onclick=drawOne;
+document.getElementById("resetBtn").onclick=()=>{ Object.assign(state,{name:"",age:"",health:"",avoid:[],avoidCustom:[],have:[...EQUIP],avoidCaffeine:true,view:"week",schedule:[],drawId:null}); save();initInputs();renderChips();generate(7);render(); };
+document.querySelectorAll('#viewSeg button').forEach(btn=>btn.onclick=()=>{ state.view=btn.dataset.view; save(); refresh(); });
+document.getElementById("mgSearch").oninput=e=>{ state.mgSearch=e.target.value; save(); renderList(); };
+
+load();
+if(!Array.isArray(state.recipes)||!state.recipes.length) state.recipes=deep(DEFAULT_RECIPES);
+if((state.mig||0)<2){ const dmap={}; DEFAULT_RECIPES.forEach(d=>dmap[d.id]=d.dish); state.recipes.forEach(r=>{ if(dmap[r.id]) r.dish=dmap[r.id]; }); state.mig=2; save(); }
+if((state.mig||0)<4){ const have=new Set(state.recipes.map(r=>r.id)); DEFAULT_RECIPES.forEach(d=>{ if((d.meal==="午餐"||d.meal==="晚餐") && !have.has(d.id)) state.recipes.push(deep(d)); }); state.mig=4; save(); }
+if((state.mig||0)<6){ const have=new Set(state.recipes.map(r=>r.id)); DEFAULT_RECIPES.forEach(d=>{ if(!have.has(d.id)) state.recipes.push(deep(d)); }); state.mig=6; save(); }
+state.recipes.forEach(r=>{ if(!r.meal) r.meal="早餐"; if(r.quick===undefined) r.quick=(r.meal==="早餐"); });
+if(!Array.isArray(state.have)||!state.have.length) state.have=[...EQUIP];
+if(!Array.isArray(state.avoidCustom)) state.avoidCustom=[];
+if(!Array.isArray(state.avoidMeats)) state.avoidMeats=[];
+if(typeof state.quickOnly!=="boolean") state.quickOnly=false;
+if(!VEGDESC.hasOwnProperty(state.vegType)) state.vegType="無";
+if(typeof state.avoidCaffeine!=="boolean") state.avoidCaffeine=true;
+if(typeof state.zhuyinCards!=="boolean") state.zhuyinCards=false;
+if(!["早餐","午餐","晚餐"].includes(state.drawMeal)) state.drawMeal="早餐";
+if(!state.mgMeal) state.mgMeal="全部";
+if(!Array.isArray(state.mgTastes)) state.mgTastes=[];
+if(!Array.isArray(state.mgAvoid)) state.mgAvoid=[];
+if(!Array.isArray(state.mgEquip)) state.mgEquip=[];
+if(typeof state.mgSearch!=="string") state.mgSearch="";
+if(!Array.isArray(state.rowFields)||!state.rowFields.length) state.rowFields=["kcal","prot"];
+if(state.drawId && state.drawDate!==todayStr()) state.drawId=null;
+initInputs(); renderChips();
+(function(){ const zt=document.getElementById("zhToggle"); zt.checked=!!state.zhuyinCards; zt.onchange=()=>{ state.zhuyinCards=zt.checked; save(); if(state.view!=="draw") renderMenu(); }; })();
+(function(){
+  const q=document.getElementById("quickToggle"), vt=document.getElementById("vegType"), vd=document.getElementById("vegDesc");
+  q.checked=!!state.quickOnly; vt.value=state.vegType; vd.textContent=VEGDESC[state.vegType]||"";
+  const refreshPlan=()=>{ if(state.view==="draw") renderDraw(); else { ensureLength(currentN()); renderMenu(); } };
+  q.onchange=()=>{ state.quickOnly=q.checked; save(); refreshPlan(); };
+  vt.onchange=()=>{ state.vegType=vt.value; vd.textContent=VEGDESC[vt.value]||""; save(); refreshPlan(); };
+})();
+if(!state.schedule.length) generate(currentN());
+setPage(state.page==="manage"?"manage":"plan");
+</script>
+</body>
+</html>
